@@ -1,4 +1,4 @@
-from itertools import product
+from itertools import product, chain
 from interfaces.game_state import GameState
 
 class HexesNotInLineException(Exception):
@@ -15,14 +15,13 @@ class HtmfBoard(object):
                            for x, y in 
                              (coords for coords in 
                                product(*(list(range(-radius, radius + 1)),)*2))}
-            self.penguins = []
-            self.scores = 
+            self.penguins = set()
+            self.scores = {GameState.PLAYER_ONE: 0, GameState.PLAYER_TWO: 0}
 
         else:
             self.hexes = hexes
             self.penguins = penguins
-
-        self.scores = scores
+            self.scores = scores
 
     def get_hex(self, coords):
         return self.hexes[coords]
@@ -37,7 +36,7 @@ class HtmfBoard(object):
         if not bhex.is_passable:
             raise IllegalMoveException()
 
-        self.penguins.append(Penguin(self.hexes[bhex], player))
+        self.penguins.add(Penguin(self.hexes[bhex], player))
 
         self.update_penguins_movability()
 
@@ -72,17 +71,23 @@ class HtmfBoard(object):
         cur_coords = coords1
         while cur_coords != coords2:
             cur_coords = tuple(map(sum, zip(cur_coords, axis_directions)))
-            line_hexes.add(self.get_hex(cur_coords))
+            line_hexes.add(self.hexes[cur_coords])
 
         return line_hexes
 
     def is_passable_path(self, start_hex, end_hex):
         try:
-            for h in self.hexes_from_to(start_hex, end_hex):
-                print(h)
-            return all(bhex.is_passable for bhex in self.hexes_from_to(start_hex, end_hex))
+            return (start_hex is not end_hex) and all(bhex.is_passable for bhex in self.hexes_from_to(start_hex, end_hex))
         except HexesNotInLineException:
             return False
+
+    # we can optimize this if necessary
+    def all_possible_moves_for_penguin(self, penguin):
+        start_hex = penguin.bhex
+        return ((start_hex.coords, bhex.coords) for bhex in self.hexes.values() if self.is_passable_path(start_hex, bhex))
+
+    def all_possible_moves_for_player(self, player):
+        return chain(*(self.all_possible_moves_for_penguin(penguin) for penguin in self.penguins))
 
     def is_passable_path_coords(self, start_coords, end_coords):
         return self.is_passable_path(self.hexes[start_coords], self.hexes[end_coords])

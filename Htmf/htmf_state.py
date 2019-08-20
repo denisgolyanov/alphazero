@@ -30,9 +30,9 @@ class HtmfState(GameState):
     def game_over(self):
         return self._board.game_over()
 
-    #TODO!!
     def all_possible_actions(self):
-        pass
+        return (HtmfAction(start.coords(), end.coords())
+                for start, end in self._board.all_possible_moves_for_player(self._current_player))
 
 #    def __str__(self):
 #        return str(self._board) + "TURN: {0}\r\n".format(self._current_player)
