@@ -1,3 +1,5 @@
+from time import time
+
 from self_play import SelfPlay
 from TicTacToe.tick_tack_toe_prediction_network import TickTackToePredictionNetwork
 from TicTacToe.tick_tack_toe_game_engine import TickTackToeGameEngine
@@ -13,18 +15,27 @@ logging.info("Hello world")
 
 
 def __main__():
+    times = []
 
     scores = {0 : 0, GameState.PLAYER_ONE: 0, GameState.PLAYER_TWO: 0}
+    times.append(time())
+    for i in range(10):
+        self_play_engine = SelfPlay(TickTackToePredictionNetwork(), TickTackToeGameEngine())
+        scores[self_play_engine.play()] += 1
+    times.append(time())
+    print(scores)
 
-#    for i in range(100):
-#        self_play_engine = SelfPlay(TickTackToePredictionNetwork(), TickTackToeGameEngine())
-#        scores[self_play_engine.play()] += 1
-
+    scores = {0 : 0, GameState.PLAYER_ONE: 0, GameState.PLAYER_TWO: 0}
+    times.append(time())
     for i in range(10):
         self_play_engine = SelfPlay(HtmfPredictionNetwork(), HtmfGameEngine())
         scores[self_play_engine.play()] += 1
-
+    times.append(time())
     print(scores)
+
+    print(times)
+    print(times[1] - times[0])
+    print(times[3] - times[2])
 
 # board = TickTakToeBoard()
 # board = board.make_move(1, 1, 1)
