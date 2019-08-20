@@ -6,4 +6,4 @@ class HtmfAction(GameAction):
         self.end_coords = end_coords
 
     def __str__(self):
-        return "[ACTION {} -> {}]".format(start_coords, end_coords)
+        return "[ACTION {} -> {}]".format(self.start_coords, self.end_coords)

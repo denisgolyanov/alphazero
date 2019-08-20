@@ -3,6 +3,9 @@ from TicTacToe.tick_tack_toe_prediction_network import TickTackToePredictionNetw
 from TicTacToe.tick_tack_toe_game_engine import TickTackToeGameEngine
 from interfaces.game_state import GameState
 
+from Htmf.htmf_prediction_network import HtmfPredictionNetwork
+from Htmf.htmf_game_engine import HtmfGameEngine
+
 import logging
 
 logging.basicConfig(level=logging.WARN)
@@ -13,12 +16,15 @@ def __main__():
 
     scores = {0 : 0, GameState.PLAYER_ONE: 0, GameState.PLAYER_TWO: 0}
 
-    for i in range(100):
-        self_play_engine = SelfPlay(TickTackToePredictionNetwork(), TickTackToeGameEngine())
+#    for i in range(100):
+#        self_play_engine = SelfPlay(TickTackToePredictionNetwork(), TickTackToeGameEngine())
+#        scores[self_play_engine.play()] += 1
+
+    for i in range(10):
+        self_play_engine = SelfPlay(HtmfPredictionNetwork(), HtmfGameEngine())
         scores[self_play_engine.play()] += 1
 
     print(scores)
-
 
 # board = TickTakToeBoard()
 # board = board.make_move(1, 1, 1)
@@ -58,7 +64,5 @@ def __main__():
 # print(board.game_over())
 # print(board.get_game_score())
 
-__main__()
-
-
-
+if __name__ == '__main__':
+    __main__()

@@ -10,7 +10,7 @@ class HtmfState(GameState):
         assert current_player in [self.PLAYER_ONE, self.PLAYER_TWO]
 
     def _next_player(self):
-        if self.self._current_player == self.PLAYER_TWO and self._board.can_move(self.PLAYER_ONE):
+        if self._current_player == self.PLAYER_TWO and self._board.can_move(self.PLAYER_ONE):
             return self.PLAYER_ONE
         else:
             return self.PLAYER_TWO
@@ -25,15 +25,24 @@ class HtmfState(GameState):
         return self._current_player
 
     def get_game_score(self):
-        return self._board.get_game_score()
+        scores = self._board.get_game_score()
+        p1score = scores[GameState.PLAYER_ONE]
+        p2score = scores[GameState.PLAYER_TWO]
+        
+        if p1score > p2score:
+            return GameState.PLAYER_ONE
+        elif p1score < p2score:
+            return GameState.PLAYER_TWO
+        else:
+            return 0
 
     def game_over(self):
         return self._board.game_over()
 
     def all_possible_actions(self):
-        return (HtmfAction(start.coords(), end.coords())
+        return (HtmfAction(start, end)
                 for start, end in self._board.all_possible_moves_for_player(self._current_player))
 
-#    def __str__(self):
-#        return str(self._board) + "TURN: {0}\r\n".format(self._current_player)
+    def __str__(self):
+        return str(self._board) + "TURN: {0}\r\n".format(self._current_player)
 

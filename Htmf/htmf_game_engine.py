@@ -8,4 +8,5 @@ class HtmfGameEngine(GameEngine):
         board = HtmfBoard(radius=1)
         board.place_penguin((0, 0), HtmfState.PLAYER_ONE)
         board.place_penguin((0, -1), HtmfState.PLAYER_TWO)
+
         return HtmfState(board, HtmfState.PLAYER_ONE)
