@@ -17,13 +17,13 @@ logging.info("Hello world")
 def __main__():
     times = []
 
-    scores = {0 : 0, GameState.PLAYER_ONE: 0, GameState.PLAYER_TWO: 0}
-    times.append(time())
-    for i in range(10):
-        self_play_engine = SelfPlay(TickTackToePredictionNetwork(), TickTackToeGameEngine())
-        scores[self_play_engine.play()] += 1
-    times.append(time())
-    print(scores)
+#    scores = {0 : 0, GameState.PLAYER_ONE: 0, GameState.PLAYER_TWO: 0}
+#    times.append(time())
+#    for i in range(10):
+#        self_play_engine = SelfPlay(TickTackToePredictionNetwork(), TickTackToeGameEngine())
+#        scores[self_play_engine.play()] += 1
+#    times.append(time())
+#    print(scores)
 
     scores = {0 : 0, GameState.PLAYER_ONE: 0, GameState.PLAYER_TWO: 0}
     times.append(time())
