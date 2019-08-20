@@ -35,7 +35,7 @@ def __main__():
 
     print(times)
     print(times[1] - times[0])
-    print(times[3] - times[2])
+#    print(times[3] - times[2])
 
 # board = TickTakToeBoard()
 # board = board.make_move(1, 1, 1)
