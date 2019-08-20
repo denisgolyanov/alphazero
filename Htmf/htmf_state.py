@@ -10,36 +10,30 @@ class HtmfState(GameState):
         assert current_player in [self.PLAYER_ONE, self.PLAYER_TWO]
 
     def _next_player(self):
-        return self.PLAYER_ONE if self._current_player == self.PLAYER_TWO else self.PLAYER_TWO
+        if self.self._current_player == self.PLAYER_TWO and self._board.can_move(self.PLAYER_ONE):
+            return self.PLAYER_ONE
+        else:
+            return self.PLAYER_TWO
 
-    #TODO!!
     def do_action(self, action):
-        assert isinstance(action, TickTackToeAction)
-        new_board = self._board.make_move(self._current_player, action.row, action.col)
+        assert isinstance(action, HtmfAction)
+        new_board = self._board.make_move(action.start_coords, action.end_coords)
 
-        return TickTackToeState(new_board, self._next_player())
+        return HtmfState(new_board, self._next_player())
 
     def get_player(self):
         return self._current_player
 
-    #TODO!! (we can infer it from the board each time, probably better to store it)
     def get_game_score(self):
         return self._board.get_game_score()
 
     def game_over(self):
         return self._board.game_over()
 
+    #TODO!!
     def all_possible_actions(self):
-        actions = []
-        if self.game_over():
-            return actions
+        pass
 
-        for i in range(3):
-            for j in range(3):
-                if self._board[i, j] == 0:
-                    actions.append(TickTackToeAction(i, j))
-        return actions
-
-    def __str__(self):
-        return str(self._board) + "TURN: {0}\r\n".format(self._current_player)
+#    def __str__(self):
+#        return str(self._board) + "TURN: {0}\r\n".format(self._current_player)
 

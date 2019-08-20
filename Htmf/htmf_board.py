@@ -1,9 +1,14 @@
 from itertools import product
 from interfaces.game_state import GameState
 
+class HexesNotInLineException(Exception):
+    pass
+class IllegalMoveException(Exception):
+    pass
+
 class HtmfBoard(object):
     def __init__(self, radius=None, hexes=None, penguins=None, scores=None):
-        assert (radius is not None) != (hexes is not None and penguins is not None)
+        assert (radius is not None) != (hexes is not None and penguins is not None and scores is not None)
 
         if radius is not None:
             self.hexes = {(x, y) : Hex(x, y)
@@ -11,6 +16,7 @@ class HtmfBoard(object):
                              (coords for coords in 
                                product(*(list(range(-radius, radius + 1)),)*2))}
             self.penguins = []
+            self.scores = 
 
         else:
             self.hexes = hexes
@@ -20,6 +26,21 @@ class HtmfBoard(object):
 
     def get_hex(self, coords):
         return self.hexes[coords]
+
+    def update_penguins_movability(self):
+        for penguin in self.penguins:
+            penguin.can_move = any(n.is_passable for n in self.neighbors(penguin.bhex))
+
+    def place_penguin(self, coords, player):
+        bhex = self.hexes[coords]
+
+        if not bhex.is_passable:
+            raise IllegalMoveException()
+
+        self.penguins.append(Penguin(self.hexes[bhex], player))
+
+        self.update_penguins_movability()
+
 
     @staticmethod
     def get_common_axis(coords1, coords2):
@@ -78,16 +99,9 @@ class HtmfBoard(object):
         return (self.hexes[c] for c in coords if c in self.hexes)
 
     def game_over(self):
-        for penguin in self.penguins:
-            for neighbor in self.neighbors(penguin.bhex):
-                if neighbor.is_passable:
-                    return True
-
-        return False
+        return any(penguin.can_move for penguin in self.penguins)
 
     def get_game_score(self):
-        #return {p : sum(bhex.value for bhex in self.hexes.values() if bhex.player == p)
-        #        for p in (GameState.PLAYER_ONE, GameState.PLAYER_TWO)}
         return self.scores
 
     def _clone(self):
@@ -107,6 +121,13 @@ class HtmfBoard(object):
         target_hex.player = penguin.player
         target_hex.is_passable = False
         new_board.scores[penguin.player] += target_hex.value
+
+        new_board.update_penguins_movability()
+
+        return new_board
+
+    def can_move(self, player):
+        return any(penguin.can_move for penguin in self.penguins if penguin.player == player)
 
 
 class Hex(object):
@@ -130,3 +151,4 @@ class Penguin(object):
     def __init__(self, bhex, player):
         self.bhex = bhex
         self.player = player
+        self.can_move = True
