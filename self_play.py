@@ -1,6 +1,7 @@
 from interfaces.game_engine import GameEngine
 from interfaces.prediction_network import PredictionNetwork
 from mcts.simulator import MCTSSimulator
+from agent import Agent
 import logging
 
 
@@ -27,14 +28,15 @@ class SelfPlay(object):
         game_state = self.game_engine.create_new_game()
 
         while not game_state.game_over():
-            logging.info("\r\n%s", str(game_state))
+            logging.info(f"\r\n{game_state}")
 
-            simulator = MCTSSimulator(self.network, game_state)
-            next_action = simulator.compute_next_action()
-            logging.info("Suggested action: %s", str(next_action))
+            agent = Agent(self.network, self.game_engine)
+            agent.create_new_simulator(game_state=game_state)
+            next_action = agent.simulator.compute_next_action()
+            logging.info(f"Suggested action: {next_action}")
             game_state = game_state.do_action(next_action)
 
-        logging.info("\r\n%s", str(game_state))
-        logging.info("Player: %s, game value: %s", str(game_state.get_player()), str(game_state.get_game_score()))
+        logging.info(f"\r\n{game_state}")
+        logging.info(f"Player: {game_state.get_player()}, game value: {game_state.get_game_score()}")
 
         return game_state.get_game_score()

@@ -93,6 +93,15 @@ class TreeNode(object):
 
         return value
 
+    def search_child(self, action, state):
+        assert action is not None or state is not None
+        if action and not state:
+            state = self.state.do_action(self.action)
+        for child in self.children:
+            #TODO: is this comparison legit?
+            if child.state == state:
+                return child
+
 
 class RootNode(TreeNode):
     def __init__(self, network, initial_state):
