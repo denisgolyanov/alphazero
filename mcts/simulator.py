@@ -15,6 +15,7 @@ class MCTSSimulator(object):
         self.root = RootNode(network, initial_state)
 
     def update_root(self, root):
+        root.parent_node = None
         self.root = root
 
     def _single_simulation(self):

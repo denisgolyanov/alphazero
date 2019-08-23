@@ -32,7 +32,7 @@ class SelfPlay(object):
 
             agent = Agent(self.network, self.game_engine)
             agent.create_new_simulator(game_state=game_state)
-            next_action = agent.simulator.compute_next_action()
+            next_action = agent.choose_action()
             logging.info(f"Suggested action: {next_action}")
             game_state = game_state.do_action(next_action)
 

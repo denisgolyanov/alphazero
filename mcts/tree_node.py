@@ -32,6 +32,8 @@ class TreeNode(object):
     def __str__(self):
         return "[V: {0}, Q: {1:.2f}, P: {2:.2f}, A:{3}]".format(self.visit_count, self.mean_action_value,
                                                                 self.probability_estimation, self.action)
+    def eval_state(self):
+        self.state = self.parent_node.state.do_action(self.action)
 
     def is_leaf(self):
         return self.children is None
@@ -93,15 +95,19 @@ class TreeNode(object):
 
         return value
 
-    def search_child(self, action, state):
+    def search_child(self, action=None, state=None):
         assert action is not None or state is not None
         if action and not state:
-            state = self.state.do_action(self.action)
+            state = self.state.do_action(action)
         for child in self.children:
-            #TODO: is this comparison legit?
+            if child.state is None:
+                child.eval_state()
             if child.state == state:
                 return child
+        raise ChildNotFoundException
 
+class ChildNotFoundException(Exception):
+    pass
 
 class RootNode(TreeNode):
     def __init__(self, network, initial_state):

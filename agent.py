@@ -24,3 +24,7 @@ class Agent(object):
         self.simulator.update_root(new_root)
 
 
+    def choose_action(self):
+        action = self.simulator.compute_next_action()
+        self.update_simulator(action=action)
+        return action
