@@ -41,3 +41,6 @@ class TickTackToeState(GameState):
     def __str__(self):
         return str(self._board) + "TURN: {0}\r\n".format(self._current_player)
 
+    def __eq__(self, other):
+        return self._board == other._board \
+        and self._current_player == other._current_player

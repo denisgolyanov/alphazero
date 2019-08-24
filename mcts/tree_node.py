@@ -5,7 +5,7 @@ Each move is a pair <action, probability>, where probability is the probability 
 assigned by the neural network.
 """
 class TreeNode(object):
-    def __init__(self, network, parent_node, action, probability_estimation):
+    def __init__(self, network, parent_node, action, probability_estimation, state=None):
 
         self.network = network
 
@@ -27,11 +27,13 @@ class TreeNode(object):
         self.probability_estimation = probability_estimation
 
         self.children = None
-        self.state = None
+        self.state = state
 
     def __str__(self):
         return "[V: {0}, Q: {1:.2f}, P: {2:.2f}, A:{3}]".format(self.visit_count, self.mean_action_value,
                                                                 self.probability_estimation, self.action)
+    def eval_state(self):
+        self.state = self.parent_node.state.do_action(self.action)
 
     def is_leaf(self):
         return self.children is None
@@ -93,9 +95,11 @@ class TreeNode(object):
 
         return value
 
+    def search_child(self, action):
+        for child in self.children:
+            if child.action == action:
+                return child
+        raise ChildNotFoundException()
 
-class RootNode(TreeNode):
-    def __init__(self, network, initial_state):
-        super().__init__(network, None, None, None)
-
-        self.state = initial_state
+class ChildNotFoundException(Exception):
+    pass
