@@ -96,6 +96,10 @@ class TreeNode(object):
         return value
 
     def search_child(self, action):
+        # in the first turn the agent does not have the oportiunity to expend the initial state
+        # (in the case of different agents competition), so it has to be done explicitly
+        if self.is_leaf():
+            self.expand()
         for child in self.children:
             if child.action == action:
                 return child
