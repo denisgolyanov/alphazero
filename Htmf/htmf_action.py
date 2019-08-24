@@ -7,3 +7,6 @@ class HtmfAction(GameAction):
 
     def __str__(self):
         return "[ACTION {} -> {}]".format(self.start_coords, self.end_coords)
+
+    def __eq__(self, other):
+        return self.start_coords == other.start_coords and self.end_coords == other.end_coords

@@ -30,7 +30,7 @@ class SelfPlay(object):
         while not game_state.game_over():
             logging.info(f"\r\n{game_state}")
 
-            agent = AlphaZeroAgent(self.network, self.game_engine)
+            agent = AlphaZeroAgent(self.network, self.game_engine, num_simulations=1600)
             agent.create_new_simulator(game_state=game_state)
             next_action = agent.choose_action()
             logging.info(f"Suggested action: {next_action}")

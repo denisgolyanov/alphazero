@@ -45,4 +45,3 @@ class HtmfState(GameState):
 
     def __str__(self):
         return str(self._board) + "TURN: {0}\r\n".format(self._current_player)
-
