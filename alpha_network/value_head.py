@@ -1,5 +1,5 @@
 import torch.nn as nn
-import torch.nn.functional as functional
+from torch import functional
 
 
 class ValueHead(nn.Module):
@@ -14,7 +14,7 @@ class ValueHead(nn.Module):
         self.fc2 = nn.Linear(256, 1)
 
     def forward(self, x):
-        x = F.relu(self.bn(self.conv(x)))
+        x = functional.F.relu(self.bn(self.conv(x)))
         x = x.view(1, -1)
-        x = F.relu(self.fc1(x))
-        return F.tanh(self.fc2(x))
+        x = functional.F.relu(self.fc1(x))
+        return functional.F.tanh(self.fc2(x))

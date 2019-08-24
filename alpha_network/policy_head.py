@@ -13,12 +13,12 @@ class PolicyHead(nn.Module):
         self.conv = nn.Conv2d(num_channels, NUM_INTERMIDATE_CHANNELS, kernel_size=1)
         self.bn = nn.BatchNorm2d(NUM_INTERMIDATE_CHANNELS)
         self.fc = nn.Linear(input_size * NUM_INTERMIDATE_CHANNELS, num_possible_actions)
-        self.logsoftmax = nn.LogSoftmax(dim=1)
+        self.logsoftmax = nn.Softmax(dim=1)
 
     def forward(self, x):
-        x = functional.relu(self.bn(self.conv(x)))
+        x = functional.F.relu(self.bn(self.conv(x)))
         x = x.view(1, -1)
         x = self.fc(x)
-        x = self.logsoftmax(x).exp()  # TODO: revisit
+        x = self.logsoftmax(x)  # TODO: revisit
 
         return x
