@@ -28,15 +28,15 @@ class SelfPlay(object):
         game_state = self.game_engine.create_new_game()
 
         while not game_state.game_over():
-            logging.info(f"\r\n{game_state}")
+            logging.debug(f"\r\n{game_state}")
 
             agent = AlphaZeroAgent(self.network, self.game_engine, num_simulations=1600)
             agent.create_new_simulator(game_state=game_state)
             next_action = agent.choose_action()
-            logging.info(f"Suggested action: {next_action}")
+            logging.debug(f"Suggested action: {next_action}")
             game_state = game_state.do_action(next_action)
 
-        logging.info(f"\r\n{game_state}")
-        logging.info(f"Player: {game_state.get_player()}, game value: {game_state.get_game_score()}")
+        logging.debug(f"\r\n{game_state}")
+        logging.debug(f"Player: {game_state.get_player()}, game value: {game_state.get_game_score()}")
 
         return game_state.get_game_score()

@@ -64,9 +64,9 @@ class MCTSSimulator(object):
     def _compute_next_action_competitive(self):
         best_child_node = max(self.root.children,
                               key=lambda child_node: child_node.visit_count)
-        logging.info('Children: %s', str(
+        logging.debug('Children: %s', str(
             [str(child_node) for child_node in self.root.children]))
-        logging.info('Scores: %s', str(
+        logging.debug('Scores: %s', str(
             [str(child_node.selection_score) for child_node in
              self.root.children]))
 
@@ -82,10 +82,10 @@ class MCTSSimulator(object):
 
         probabilities = [_child_node_probability(child_node) for child_node in
                          self.root.children]
-        logging.info('Move probabilities: %s', str(probabilities))
-        logging.info('Children: %s', str(
+        logging.debug('Move probabilities: %s', str(probabilities))
+        logging.debug('Children: %s', str(
             [str(child_node) for child_node in self.root.children]))
-        logging.info('Scores: %s', str(
+        logging.debug('Scores: %s', str(
             [str(child_node.selection_score) for child_node in
              self.root.children]))
 

@@ -12,10 +12,10 @@ from Htmf.htmf_game_engine import HtmfGameEngine
 
 import logging
 
-logging.basicConfig(level=logging.WARN)
+logging.basicConfig(level=logging.INFO)
 
-AGENT_A_SIMULATIONS = 10
-AGENT_B_SIMULATIONS = 3000
+AGENT_A_SIMULATIONS = 1000
+AGENT_B_SIMULATIONS = 1000
 
 def __main__():
     times = []
@@ -30,7 +30,7 @@ def __main__():
 
     scores = {0 : 0, GameState.PLAYER_ONE: 0, GameState.PLAYER_TWO: 0}
     times.append(time())
-    for i in range(100):
+    for i in range(20):
         game_engine = HtmfGameEngine()
         agentA = AlphaZeroAgent(HtmfPredictionNetwork(), game_engine,
                                 num_simulations=AGENT_A_SIMULATIONS)
@@ -39,7 +39,7 @@ def __main__():
         evaluation = Evaluation(game_engine, agentA, agentB)
         scores[evaluation.play()] += 1
     times.append(time())
-    logging.warning(f"{AGENT_A_SIMULATIONS} vs {AGENT_B_SIMULATIONS} scores: {scores}")
+    logging.info(f"{AGENT_A_SIMULATIONS} vs {AGENT_B_SIMULATIONS} scores: {scores}")
 
     logging.debug(times)
     logging.warning(f"total run seconds {times[1] - times[0]}")
