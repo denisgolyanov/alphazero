@@ -1,7 +1,7 @@
 import logging
 import numpy as np
 from operator import attrgetter
-from mcts.tree_node import RootNode
+from mcts.tree_node import TreeNode
 from interfaces.game_state import GameState
 
 
@@ -12,9 +12,13 @@ class MCTSSimulator(object):
         :param network: a PredictionNetwork implementation object
         :param initial_state: an initial GameState object
         """
-        self.root = RootNode(network, initial_state)
+        self.root = TreeNode(network, parent_node=None,
+                             probability_estimation=None, action=None,
+                             state=initial_state)
 
     def update_root(self, root):
+        if root.state is None:
+            root.eval_state()
         root.parent_node = None
         self.root = root
 
@@ -51,28 +55,39 @@ class MCTSSimulator(object):
     def _compute_action_probabilities(self, temperature):
         def _child_node_probability(child_node):
             return child_node.visit_count ** temperature / \
-                (sum([child_node.visit_count ** temperature for child_node in self.root.children]))
+                   (sum([child_node.visit_count ** temperature for child_node in
+                         self.root.children]))
 
-        return [(child_node.action, _child_node_probability(child_node)) for child_node in self.root.children]
+        return [(child_node.action, _child_node_probability(child_node)) for
+                child_node in self.root.children]
 
     def _compute_next_action_competitive(self):
-        best_child_node = max(self.root.children, key=lambda child_node: child_node.visit_count)
-        logging.info('Children: %s', str([str(child_node) for child_node in self.root.children]))
-        logging.info('Scores: %s', str([str(child_node.selection_score) for child_node in self.root.children]))
+        best_child_node = max(self.root.children,
+                              key=lambda child_node: child_node.visit_count)
+        logging.info('Children: %s', str(
+            [str(child_node) for child_node in self.root.children]))
+        logging.info('Scores: %s', str(
+            [str(child_node.selection_score) for child_node in
+             self.root.children]))
 
         return best_child_node.action
 
     def _compute_next_action_stochastic(self):
 
-        total_visit_count = sum([child_node.visit_count for child_node in self.root.children])
+        total_visit_count = sum(
+            [child_node.visit_count for child_node in self.root.children])
 
         def _child_node_probability(child_node):
             return child_node.visit_count / (1.0 * total_visit_count)
 
-        probabilities = [_child_node_probability(child_node) for child_node in self.root.children]
+        probabilities = [_child_node_probability(child_node) for child_node in
+                         self.root.children]
         logging.info('Move probabilities: %s', str(probabilities))
-        logging.info('Children: %s', str([str(child_node) for child_node in self.root.children]))
-        logging.info('Scores: %s', str([str(child_node.selection_score) for child_node in self.root.children]))
+        logging.info('Children: %s', str(
+            [str(child_node) for child_node in self.root.children]))
+        logging.info('Scores: %s', str(
+            [str(child_node.selection_score) for child_node in
+             self.root.children]))
 
         return np.random.choice(self.root.children, p=probabilities).action
 

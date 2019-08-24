@@ -1,7 +1,7 @@
 from mcts.simulator import MCTSSimulator
 from interfaces.game_engine import GameEngine
 
-class Agent(object):
+class AlphaZeroAgent(object):
 
     def __init__(self, network, game_engine):
         self.network = network
@@ -15,12 +15,8 @@ class Agent(object):
         self.simulator = simulator
         return simulator
 
-    def update_simulator(self, action=None, state=None):
-        assert action or state
-        if action:
-            new_root = self.simulator.root.search_child(action=action)
-        else:
-            new_root = self.simulator.root.search_child(state=state)
+    def update_simulator(self, action):
+        new_root = self.simulator.root.search_child(action=action)
         self.simulator.update_root(new_root)
 
 

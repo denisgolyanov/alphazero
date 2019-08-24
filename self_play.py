@@ -1,7 +1,7 @@
 from interfaces.game_engine import GameEngine
 from interfaces.prediction_network import PredictionNetwork
 from mcts.simulator import MCTSSimulator
-from agent import Agent
+from alphazeroagent import AlphaZeroAgent
 import logging
 
 
@@ -30,7 +30,7 @@ class SelfPlay(object):
         while not game_state.game_over():
             logging.info(f"\r\n{game_state}")
 
-            agent = Agent(self.network, self.game_engine)
+            agent = AlphaZeroAgent(self.network, self.game_engine)
             agent.create_new_simulator(game_state=game_state)
             next_action = agent.choose_action()
             logging.info(f"Suggested action: {next_action}")
