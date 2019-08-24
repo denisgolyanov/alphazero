@@ -10,11 +10,13 @@ class FeatureExtractor(nn.Module):
         super(FeatureExtractor, self).__init__()
         self.conv1 = nn.Conv2d(input_channels, output_channels, kernel_size=3, stride=1, padding=1, bias=False)
         self.bn1 = nn.BatchNorm2d(output_channels)
+        self.residual_depth = residual_depth
 
-        self.residual_blocks = [ResidualBlock(output_channels).double() for i in range(residual_depth)] # TODO: extract to attribute
+        for res_block_num in range(residual_depth):
+            setattr(self, f"res_layer_{res_block_num}", ResidualBlock(output_channels).double())
 
     def forward(self, x):
         x = F.relu(self.bn1(self.conv1(x)))
-        for residual_block in self.residual_blocks:
-            x = residual_block.forward(x)
+        for res_block_num in range(self.residual_depth):
+            x = getattr(self, f"res_layer_{res_block_num}")(x)
         return x
