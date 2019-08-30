@@ -8,14 +8,8 @@ from alpha_network.alpha_network import AlphaNetwork
 
 class TickTackToePredictionNetwork(PredictionNetwork):
 
-    def __init__(self):
-        residual_depth = 5
-        single_channel_zize = 9
-        num_input_channels = 1
-        num_possible_actions = 9
-
-        self._network = AlphaNetwork(residual_depth, single_channel_zize, num_input_channels, num_possible_actions)
-        self._network = self._network.double()
+    def __init__(self, network):
+        self._network = network
 
     def predict(self, state):
         """
@@ -27,12 +21,7 @@ class TickTackToePredictionNetwork(PredictionNetwork):
         assert isinstance(state, TickTackToeState)
 
         state_tensor = state.convert_to_tensor()
-        with torch.no_grad():
-            action_probabilities, value = self._network.forward(state_tensor)
-
-        # remove batch dimension
-        action_probabilities = action_probabilities[0]
-        value = value[0]
+        action_probabilities, value = self._network.predict(state_tensor)
 
         all_possible_actions = state.all_possible_actions()
         all_possible_actions_raw = [(action.row, action.col) for action in all_possible_actions]

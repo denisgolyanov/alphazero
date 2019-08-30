@@ -4,6 +4,7 @@ from self_play import SelfPlay
 from TicTacToe.tick_tack_toe_prediction_network import TickTackToePredictionNetwork
 from TicTacToe.tick_tack_toe_game_engine import TickTackToeGameEngine
 from interfaces.game_state import GameState
+from alpha_network.alpha_network import AlphaNetwork
 
 import logging
 
@@ -17,19 +18,27 @@ def __main__():
 
     for i in range(10):
         game_engine = TickTackToeGameEngine()
+        residual_depth = 5
+        single_channel_zize = 9
+        num_input_channels = 1
+        num_possible_actions = 9
+        network = AlphaNetwork(residual_depth, single_channel_zize, num_input_channels, num_possible_actions)
+        network = network.double()
+        prediction_network = TickTackToePredictionNetwork(network)
 
         # agentA = AlphaZeroAgent(TickTackToePredictionNetwork(), game_engine, num_simulations=100)
         # agentB = AlphaZeroAgent(TickTackToePredictionNetwork(), game_engine, num_simulations=100)
         # evaluation = Evaluation(game_engine, agentA, agentB)
         # scores[evaluation.play()] += 1
 
-        self_play_engine = SelfPlay(TickTackToePredictionNetwork(), game_engine)
+        self_play_engine = SelfPlay(prediction_network, game_engine, 1000)
         game_score, training_examples = self_play_engine.play()
         scores[game_score] += 1
 
-        print(f"examples: {training_examples}")
-
-    print(scores)
+    print(f"scores:{scores}, number examples: {len(training_examples)}")
+    print("Attempting to train")
+    losses = network.train(training_examples, epochs=10, batch_size=32)
+    print(f"losses: {losses}")
 
 
 
