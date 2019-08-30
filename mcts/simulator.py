@@ -34,25 +34,23 @@ class MCTSSimulator(object):
                 # tied game
                 pass
 
-            elif node.parent_node.state.get_player() == value:
-                # player who made last move, won
+            # value is relative to the player whose current turn it is
+            elif node.state.get_player() == value:
                 value = 1.0
             else:
-                # player who made last move, lost
                 value = -1.0
-
         else:
-            # the value is the winning chance of the next player, thus the negation
-            value = node.expand() * -1.0
+            value = node.expand()
+
+        player = node.state.get_player()
 
         while not node.is_root():
-            node.backwards_pass(value)
+
+            player_relative_value = value if node.parent_node.state.get_player() == player else -1.0 * value
+            node.backwards_pass(player_relative_value)
             node = node.parent_node
-            value *= -1.0
 
-            # TODO: this may actually not be correct for games where the player does not necessarily switch
-            # after each round
-
+        # while the Q value is not used for the root, we still need to update visit count
         node.backwards_pass(value)
 
     def execute_simulations(self, num_simulations):
