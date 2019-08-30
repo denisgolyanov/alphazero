@@ -15,7 +15,7 @@ def __main__():
 
     scores = {0 : 0, GameState.PLAYER_ONE: 0, GameState.PLAYER_TWO: 0}
 
-    for i in range(10):
+    for i in range(100):
         game_engine = TickTackToeGameEngine()
         # self_play_engine = SelfPlay(TickTackToePredictionNetwork(), game_engine)
         # scores[self_play_engine.play()] += 1
