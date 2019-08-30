@@ -1,28 +1,42 @@
 from mcts.simulator import MCTSSimulator
-from interfaces.game_engine import GameEngine
+
+import numpy as np
+
 
 class AlphaZeroAgent(object):
-
-    def __init__(self, network, game_engine, num_simulations):
-        self.network = network
+    def __init__(self, prediction_network, game_engine, num_simulations):
+        self.prediction_network = prediction_network
         self.game_engine = game_engine
         self.num_simulations = num_simulations
-        self.simulator = self.create_new_simulator()
+        self.simulator = self._create_new_simulator()
 
-    def create_new_simulator(self, game_state=None):
-        if game_state is None:
-            game_state = self.game_engine.create_new_game()
-        simulator = MCTSSimulator(self.network, game_state)
+    def _create_new_simulator(self):
+        game_state = self.game_engine.create_new_game()
+        simulator = MCTSSimulator(self.prediction_network, game_state)
         self.simulator = simulator
         return simulator
 
     def update_simulator(self, action):
-        current_root = self.simulator.root
-        new_root = current_root.search_child(action=action)
-        self.simulator.update_root(new_root)
+        self.simulator.update_root_by_action(action)
 
+    def choose_action(self, fetch_probabilities=False):
+        self.simulator.execute_simulations(num_simulations=self.num_simulations)
+        action_probability_pairs = self.simulator.compute_next_action_probabilities()
+        action = self._select_next_action(action_probability_pairs)
+        self.update_simulator(action)
 
-    def choose_action(self):
-        action = self.simulator.compute_next_action(num_simulations=self.num_simulations)
-        self.update_simulator(action=action)
+        if fetch_probabilities:
+            return action, self.prediction_network.translate_to_action_probabilities_tensor(action_probability_pairs)
+
         return action
+
+    @staticmethod
+    def _select_next_action(action_probability_pairs):
+        competitive = False  # TODO: extract to parameter
+
+        assert not competitive, "Need to implement"
+        # if competitive:
+        #    return max(action_probability_pairs, key=lambda pair: child_node.visit_count)[0]
+
+        return np.random.choice([pair[0] for pair in action_probability_pairs],
+                                p=[pair[1] for pair in action_probability_pairs])

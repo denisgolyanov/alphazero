@@ -47,3 +47,11 @@ class TickTackToePredictionNetwork(PredictionNetwork):
                                     for action in all_possible_actions]
 
         return action_probability_pairs, value.item()
+
+    @staticmethod
+    def translate_to_action_probabilities_tensor(action_mcts_probability_pairs):
+        tensor = torch.zeros([9], dtype=torch.double)
+        for action, mcts_probability in action_mcts_probability_pairs:
+            tensor[action.row * 3 + action.col] = mcts_probability
+
+        return tensor
