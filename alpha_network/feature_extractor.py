@@ -13,7 +13,7 @@ class FeatureExtractor(nn.Module):
         self.residual_depth = residual_depth
 
         for res_block_num in range(residual_depth):
-            setattr(self, f"res_layer_{res_block_num}", ResidualBlock(output_channels).double())
+            setattr(self, f"res_layer_{res_block_num}", ResidualBlock(output_channels))
 
     def forward(self, x):
         x = F.relu(self.bn1(self.conv1(x)))
