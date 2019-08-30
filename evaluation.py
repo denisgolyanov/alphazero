@@ -23,6 +23,7 @@ class Evaluation(object):
         :return: the identity of the winning player (GameState.PLAYER_ONE or GameState.PLAYER_TWO) or 0 if game is tied
         """
         logging.info("Starting self play game")
+        competitive = True
 
         game_state = self.game_engine.create_new_game()
 
@@ -30,10 +31,10 @@ class Evaluation(object):
             logging.info(f"\r\n{game_state}")
 
             if game_state.get_player() == GameState.PLAYER_ONE:
-                next_action = self.agentA.choose_action()
+                next_action = self.agentA.choose_action(competitive)
                 self.agentB.update_simulator(next_action)
             elif game_state.get_player() == GameState.PLAYER_TWO:
-                next_action = self.agentB.choose_action()
+                next_action = self.agentB.choose_action(competitive)
                 self.agentA.update_simulator(next_action)
             else:
                 raise Exception("Neither of players' turn")
