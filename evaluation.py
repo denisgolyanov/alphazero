@@ -30,6 +30,8 @@ class Evaluation(object):
         while not game_state.game_over():
             logging.info(f"\r\n{game_state}")
 
+            # TODO: improve according to actual player.
+
             if game_state.get_player() == GameState.PLAYER_ONE:
                 next_action = self.agentA.choose_action(competitive)
                 self.agentB.update_simulator(next_action)

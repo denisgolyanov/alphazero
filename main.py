@@ -15,14 +15,19 @@ def __main__():
 
     scores = {0 : 0, GameState.PLAYER_ONE: 0, GameState.PLAYER_TWO: 0}
 
-    for i in range(100):
+    for i in range(10):
         game_engine = TickTackToeGameEngine()
-        # self_play_engine = SelfPlay(TickTackToePredictionNetwork(), game_engine)
-        # scores[self_play_engine.play()] += 1
-        agentA = AlphaZeroAgent(TickTackToePredictionNetwork(), game_engine, num_simulations=2000)
-        agentB = AlphaZeroAgent(TickTackToePredictionNetwork(), game_engine, num_simulations=5)
-        evaluation = Evaluation(game_engine, agentA, agentB)
-        scores[evaluation.play()] += 1
+
+        # agentA = AlphaZeroAgent(TickTackToePredictionNetwork(), game_engine, num_simulations=100)
+        # agentB = AlphaZeroAgent(TickTackToePredictionNetwork(), game_engine, num_simulations=100)
+        # evaluation = Evaluation(game_engine, agentA, agentB)
+        # scores[evaluation.play()] += 1
+
+        self_play_engine = SelfPlay(TickTackToePredictionNetwork(), game_engine)
+        game_score, training_examples = self_play_engine.play()
+        scores[game_score] += 1
+
+        print(f"examples: {training_examples}")
 
     print(scores)
 
