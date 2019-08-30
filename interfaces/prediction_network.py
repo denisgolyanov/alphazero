@@ -16,3 +16,14 @@ class PredictionNetwork(object, metaclass=abc.ABCMeta):
         """
         raise NotImplementedError()
 
+    @abc.abstractmethod
+    def translate_to_action_probabilities_tensor(self, action_mcts_probability_pairs):
+        """
+
+        :param action_mcts_probability_pairs: a list of pairs of form <action, mcts_probability>
+                                              derived from the mcts simulation tree.
+        :note: missing actions are to be interpreted as illegal from current state and with zero probability
+        :return: a tensor representing the policy  network output probabilities
+        """
+        raise NotImplementedError()
+

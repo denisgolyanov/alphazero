@@ -19,9 +19,9 @@ class AlphaZeroAgent(object):
     def update_simulator(self, action):
         self.simulator.update_root_by_action(action)
 
-    def choose_action(self, fetch_probabilities=False):
+    def choose_action(self, competitive, fetch_probabilities=False):
         self.simulator.execute_simulations(num_simulations=self.num_simulations)
-        action_probability_pairs = self.simulator.compute_next_action_probabilities()
+        action_probability_pairs = self.simulator.compute_next_action_probabilities(competitive)
         action = self._select_next_action(action_probability_pairs)
         self.update_simulator(action)
 

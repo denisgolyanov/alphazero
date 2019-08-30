@@ -30,7 +30,7 @@ class SelfPlay(object):
         while not game_state.game_over():
             logging.info(f"\r\n{game_state}")
 
-            next_action = self._agent.choose_action()
+            next_action = self._agent.choose_action(competitive=True)
             logging.info(f"Suggested action: {next_action}")
             game_state = game_state.do_action(next_action)
 

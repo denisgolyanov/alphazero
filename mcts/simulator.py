@@ -57,7 +57,7 @@ class MCTSSimulator(object):
             logging.debug(f"Simulation {i}")
             self._single_simulation()
 
-    def compute_next_action_probabilities(self):
+    def compute_next_action_probabilities(self, competitive):
         """
 
         :return: A list of pairs <action, probability>, where probability is derived from the
@@ -67,10 +67,16 @@ class MCTSSimulator(object):
                  for discarded moves is implicitly zero.
         """
 
-        total_visit_count = sum([child_node.visit_count for child_node in self.root.children])
+        if competitive:
+            max_visit_count_node = max(self.root.children, key=attrgetter('visit_count'))
 
-        def _child_node_probability(child_node):
-            return child_node.visit_count / (1.0 * total_visit_count)
+            def _child_node_probability(child_node):
+                return 1.0 if child_node == max_visit_count_node else 0.0
+        else:
+            total_visit_count = sum([child_node.visit_count for child_node in self.root.children])
+
+            def _child_node_probability(child_node):
+                return child_node.visit_count / (1.0 * total_visit_count)
 
         probabilities = [(child_node.action, _child_node_probability(child_node)) for child_node in self.root.children]
         logging.info('Action probabilities: %s', str([prob for action, prob in probabilities]))
