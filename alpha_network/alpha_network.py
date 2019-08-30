@@ -9,6 +9,7 @@ import torch
 import numpy as np
 import logging
 
+
 class AlphaNetwork(nn.Module):
     def __init__(self, residual_depth, single_channel_size, num_input_channels, num_possible_actions):
         super(AlphaNetwork, self).__init__()
@@ -75,7 +76,7 @@ class AlphaNetwork(nn.Module):
 
         :return: the loss at the end of each epoch
         """
-        optimizer = torch.optim.SGD(self.nnet.parameters(), lr=0.1, momentum=0.9)
+        optimizer = torch.optim.SGD(self.parameters(), lr=0.1, momentum=0.9)
         losses = list()
 
         for epoch in range(epochs):
@@ -85,9 +86,9 @@ class AlphaNetwork(nn.Module):
                 optimizer.zero_grad()
 
                 states, policies, values = list(zip(*x[batch_index * batch_size: (batch_index + 1) * batch_size]))
-                states = torch.stack(states)
-                policies = torch.stack(policies)
-                values = torch.stack(values)
+                states = torch.cat(states)
+                policies = torch.cat(policies)
+                values = torch.cat(values)
 
                 loss = self.forward_batch(states, policies, values)
 

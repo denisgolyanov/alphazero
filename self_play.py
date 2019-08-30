@@ -6,6 +6,7 @@ from alphazeroagent import AlphaZeroAgent
 import logging
 import torch
 
+
 class TrainingExample(object):
     def __init__(self, game_state, action_probability_tensor):
         self._game_state = game_state
@@ -30,9 +31,11 @@ class TrainingExample(object):
         return str(self)
 
     def to_tensor_tuple(self):
+        value_tensor = torch.empty(1, 1, dtype=torch.double)
+        value_tensor[0, 0] = self._value
         return (self._game_state.convert_to_tensor(),
                 self._action_probability_tesnor,
-                torch.tensor(self._value, dtype=torch.double)) # TODO: tensor creation should be uniform
+                value_tensor)  # TODO: tensor creation should be uniform
 
 
 class SelfPlay(object):

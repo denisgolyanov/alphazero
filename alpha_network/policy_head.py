@@ -17,7 +17,7 @@ class PolicyHead(nn.Module):
 
     def forward(self, x):
         x = functional.F.relu(self.bn(self.conv(x)))
-        x = x.view(1, -1)
+        x = x.view(x.size()[0], -1)
         x = self.fc(x)
         x = self.logSoftmax(x)
 

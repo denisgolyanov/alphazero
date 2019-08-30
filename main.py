@@ -15,6 +15,7 @@ logging.info("Hello world")
 def __main__():
 
     scores = {0 : 0, GameState.PLAYER_ONE: 0, GameState.PLAYER_TWO: 0}
+    all_examples = []
 
     for i in range(10):
         game_engine = TickTackToeGameEngine()
@@ -33,11 +34,12 @@ def __main__():
 
         self_play_engine = SelfPlay(prediction_network, game_engine, 1000)
         game_score, training_examples = self_play_engine.play()
+        all_examples.extend(training_examples)
         scores[game_score] += 1
 
     print(f"scores:{scores}, number examples: {len(training_examples)}")
     print("Attempting to train")
-    losses = network.train(training_examples, epochs=10, batch_size=32)
+    losses = network.train(all_examples, epochs=100, batch_size=32)
     print(f"losses: {losses}")
 
 
