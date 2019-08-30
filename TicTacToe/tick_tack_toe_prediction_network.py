@@ -27,7 +27,8 @@ class TickTackToePredictionNetwork(PredictionNetwork):
         assert isinstance(state, TickTackToeState)
 
         state_tensor = state.convert_to_tensor()
-        action_probabilities, value = self._network.forward(state_tensor)
+        with torch.no_grad():
+            action_probabilities, value = self._network.forward(state_tensor)
 
         # remove batch dimension
         action_probabilities = action_probabilities[0]

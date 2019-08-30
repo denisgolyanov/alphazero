@@ -21,8 +21,8 @@ class AlphaZeroAgent(object):
 
     def choose_action(self, competitive, fetch_probabilities=False):
         self.simulator.execute_simulations(num_simulations=self.num_simulations)
-        action_probability_pairs = self.simulator.compute_next_action_probabilities(competitive)
-        action = self._select_next_action(action_probability_pairs)
+        action_probability_pairs = self.simulator.compute_next_action_probabilities()
+        action = self._select_next_action(action_probability_pairs, competitive)
         self.update_simulator(action)
 
         if fetch_probabilities:
@@ -31,6 +31,9 @@ class AlphaZeroAgent(object):
         return action
 
     @staticmethod
-    def _select_next_action(action_probability_pairs):
+    def _select_next_action(action_probability_pairs, competitive):
+        if competitive:
+            return max(action_probability_pairs, key=lambda pair: pair[1])[0]
+
         return np.random.choice([pair[0] for pair in action_probability_pairs],
                                 p=[pair[1] for pair in action_probability_pairs])
