@@ -32,11 +32,5 @@ class AlphaZeroAgent(object):
 
     @staticmethod
     def _select_next_action(action_probability_pairs):
-        competitive = False  # TODO: extract to parameter
-
-        assert not competitive, "Need to implement"
-        # if competitive:
-        #    return max(action_probability_pairs, key=lambda pair: child_node.visit_count)[0]
-
         return np.random.choice([pair[0] for pair in action_probability_pairs],
                                 p=[pair[1] for pair in action_probability_pairs])
