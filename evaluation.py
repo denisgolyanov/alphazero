@@ -9,7 +9,7 @@ from alphazeroagent import AlphaZeroAgent
 
 class Evaluation(object):
 
-    def __init__(self, game_engine, agentA, agentB):
+    def __init__(self, game_engine, agentA, agentB, competitive=False):
         """
         :param game_engine: a GameEngine object
         """
@@ -17,6 +17,9 @@ class Evaluation(object):
         self.game_engine = game_engine
         self.agentA = agentA
         self.agentB = agentB
+        self.competitive = competitive
+        self.scores = {0: 0, GameState.PLAYER_ONE: 0, GameState.PLAYER_TWO: 0}
+
 
     def play(self, competitive=False):
         """
@@ -45,3 +48,19 @@ class Evaluation(object):
         logger.log(EXTREME_DEBUG_LEVEL, f"Player: {game_state.get_player()}, game value: {game_state.get_game_score()}")
 
         return game_state.get_game_score()
+
+    def play_n_games(self, number_of_games):
+        assert number_of_games % 2 == 0
+        for i in range(number_of_games):
+            logger.debug(f"Eval round {i}")
+            if i == number_of_games/2:
+                self.switch_players()
+            self.scores[self.play(competitive=self.competitive)] += 1
+        return self.scores
+
+    def switch_players(self):
+        temp_agent = self.agentA
+        self.agentA = self.agentB
+        self.agentB = temp_agent
+        ties, wins, loses = self.scores[0], self.scores[GameState.PLAYER_ONE], self.scores[GameState.PLAYER_TWO]
+        self.scores = self.scores = {0: ties, GameState.PLAYER_ONE: loses, GameState.PLAYER_TWO: wins}

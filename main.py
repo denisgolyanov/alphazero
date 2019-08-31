@@ -55,7 +55,7 @@ def __main__():
         losses = current_network.train(all_examples, epochs=NUM_EPOCHS, batch_size=32)
         logger.info(f"current size of all_examples is {len(all_examples)}")
 
-        if evaluate(game_engine, previous_network, current_network):
+        if evaluate_vs_previous(game_engine, previous_network, current_network):
             logger.info("Saving checkpoint")
             previous_network = current_network
             previous_network.save_checkpoint()
@@ -74,77 +74,29 @@ def evaluate_competitive(game_engine, previous_network, current_network):
     agent_a = AlphaZeroAgent(previous_prediction_network, game_engine, num_simulations=NUM_SIMULATIONS)
     agent_b = AlphaZeroAgent(current_prediction_network, game_engine, num_simulations=NUM_SIMULATIONS)
 
-    game_score = Evaluation(game_engine, agent_a, agent_b).play(competitive=True)
-    logger.info(f"Competitive evalulation score, new agent is 2nd player: {game_score}")
-
-    agent_a = AlphaZeroAgent(previous_prediction_network, game_engine, num_simulations=NUM_SIMULATIONS)
-    agent_b = AlphaZeroAgent(current_prediction_network, game_engine, num_simulations=NUM_SIMULATIONS)
-
-    game_score = Evaluation(game_engine, agent_b, agent_a).play(competitive=True)
+    evaluation = Evaluation(game_engine, agent_a, agent_b, competitive=True)
+    game_score = evaluation.play_n_games(2) # 1 game for each side, because they're deterministic
     logger.info(f"Competitive evalulation score, new agent is 1st player: {game_score}")
 
 def evaluate_random(game_engine, current_network):
-    current_prediction_network = TickTackToePredictionNetwork(current_network)
-
-    scores = {0 : 0, GameState.PLAYER_ONE: 0, GameState.PLAYER_TWO: 0}
     logger.info("evaluating against random agent...")
-
-    for i in range(NUM_RANDOM_GAMES // 2):
-        logger.debug(f"Eval random round {i}")
-
-        agent_a = RandomAgent()
-        agent_b = AlphaZeroAgent(current_prediction_network, game_engine, num_simulations=NUM_SIMULATIONS)
-        evaluation = Evaluation(game_engine, agent_a, agent_b)
-
-        scores[evaluation.play(competitive=True)] += 1
-
-    for i in range(NUM_RANDOM_GAMES // 2):
-        logger.debug(f"Eval random round {NUM_RANDOM_GAMES // 2 + i}")
-
-        agent_a = AlphaZeroAgent(current_prediction_network, game_engine, num_simulations=NUM_SIMULATIONS)
-        agent_b = RandomAgent()
-        evaluation = Evaluation(game_engine, agent_a, agent_b)
-
-        game_score = evaluation.play(competitive=True)
-        if game_score == GameState.PLAYER_TWO:
-            game_score = GameState.PLAYER_ONE
-        else:
-            game_score = GameState.PLAYER_TWO
-
-        scores[game_score] += 1
+    agent_a = RandomAgent()
+    current_prediction_network = TickTackToePredictionNetwork(current_network)
+    agent_b = AlphaZeroAgent(current_prediction_network, game_engine, num_simulations=NUM_SIMULATIONS)
+    evaluation = Evaluation(game_engine, agent_a, agent_b)
+    scores = evaluation.play_n_games(NUM_RANDOM_GAMES)
 
     logger.info(f"Eval scores vs random agent {scores}")
 
-def evaluate(game_engine, previous_network, current_network):
+def evaluate_vs_previous(game_engine, previous_network, current_network):
     logger.info("Evaluation has begun")
     previous_prediction_network = TickTackToePredictionNetwork(previous_network)
     current_prediction_network = TickTackToePredictionNetwork(current_network)
 
-    scores = {0 : 0, GameState.PLAYER_ONE: 0, GameState.PLAYER_TWO: 0}
-
-    for i in range(NUM_EVALUATE_GAMES // 2):
-        logger.debug(f"Eval round {i}")
-
-        agent_a = AlphaZeroAgent(previous_prediction_network, game_engine, num_simulations=NUM_SIMULATIONS)
-        agent_b = AlphaZeroAgent(current_prediction_network, game_engine, num_simulations=NUM_SIMULATIONS)
-        evaluation = Evaluation(game_engine, agent_a, agent_b)
-
-        scores[evaluation.play()] += 1
-
-    for i in range(NUM_EVALUATE_GAMES // 2):
-        logger.debug(f"Eval round {NUM_EVALUATE_GAMES // 2 + i}")
-
-        agent_a = AlphaZeroAgent(previous_prediction_network, game_engine, num_simulations=NUM_SIMULATIONS)
-        agent_b = AlphaZeroAgent(current_prediction_network, game_engine, num_simulations=NUM_SIMULATIONS)
-        evaluation = Evaluation(game_engine, agent_b, agent_a)
-
-        game_score = evaluation.play()
-        if game_score == GameState.PLAYER_TWO:
-            game_score = GameState.PLAYER_ONE
-        else:
-            game_score = GameState.PLAYER_TWO
-
-        scores[game_score] += 1
+    agent_a = AlphaZeroAgent(previous_prediction_network, game_engine, num_simulations=NUM_SIMULATIONS)
+    agent_b = AlphaZeroAgent(current_prediction_network, game_engine, num_simulations=NUM_SIMULATIONS)
+    evaluation = Evaluation(game_engine, agent_a, agent_b)
+    scores = evaluation.play_n_games(NUM_EVALUATE_GAMES)
 
     logger.info(f"Eval scores {scores}")
     if not scores[GameState.PLAYER_ONE] or scores[GameState.PLAYER_TWO] / (scores[GameState.PLAYER_ONE]) > THRESHOLD:
@@ -175,8 +127,8 @@ def compete_with_user(checkpoint_name):
 
 
 
-compete_with_user("2019-08-31T10_14_38_027338")
-#__main__()
+#compete_with_user("2019-08-31T10_14_38_027338")
+__main__()
 
 
 
