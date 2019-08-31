@@ -8,6 +8,7 @@ from alpha_network.value_head import ValueHead
 import torch
 import numpy as np
 import logging
+from utils import logger
 
 
 class AlphaNetwork(nn.Module):
@@ -84,9 +85,9 @@ class AlphaNetwork(nn.Module):
         losses = list()
 
         num_batches = np.floor(len(train_examples) / batch_size)
-
+        logger.info("beginning training")
         for epoch in range(epochs):
-            logging.warning(f'Epoch {epoch}')
+            logger.debug(f'Epoch {epoch}')
             np.random.shuffle(train_examples)
             batch_index = 0
             epoch_loss = 0.0
