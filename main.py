@@ -15,8 +15,8 @@ logging.info("Hello world")
 
 
 NUM_SIMULATIONS = 200
-NUM_EVALUATE_GAMES = 1
-NUM_RANDOM_GAMES = 5
+NUM_EVALUATE_GAMES = 100
+NUM_RANDOM_GAMES = 100
 RESIDUAL_DEPTH = 2
 THRESHOLD = 1.05
 NUM_EPOCHS = 10
@@ -35,7 +35,7 @@ def __main__():
     previous_network = previous_network.double()
 
     num_episodes = 100
-    num_games_per_episode = 1
+    num_games_per_episode = 50
     num_history_episodes = 5
     num_games_history = num_games_per_episode * num_history_episodes
 
@@ -97,7 +97,7 @@ def evaluate_random(game_engine, current_network):
         agent_b = AlphaZeroAgent(current_prediction_network, game_engine, num_simulations=NUM_SIMULATIONS)
         evaluation = Evaluation(game_engine, agent_a, agent_b)
 
-        scores[evaluation.play()] += 1
+        scores[evaluation.play(competitive=True)] += 1
 
     for i in range(NUM_RANDOM_GAMES // 2):
         logging.warning(f"Eval random round {NUM_RANDOM_GAMES // 2 + i}")
@@ -106,7 +106,7 @@ def evaluate_random(game_engine, current_network):
         agent_b = RandomAgent()
         evaluation = Evaluation(game_engine, agent_a, agent_b)
 
-        game_score = evaluation.play()
+        game_score = evaluation.play(competitive=True)
         if game_score == GameState.PLAYER_TWO:
             game_score = GameState.PLAYER_ONE
         else:

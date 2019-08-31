@@ -67,29 +67,33 @@ class AlphaNetwork(nn.Module):
         policies, values = self._forward(states)
         return self._policy_loss(policies, target_policies) + self._value_loss(values, target_values)
 
-    def train(self, x, epochs, batch_size=32):
+    def train(self, train_examples, epochs, batch_size=32):
         """
-        :param x: train examples, a list of tuples of form:
+        :param train_examples: train examples, a list of tuples of form:
                 <state, expected policy, value>
         :param epochs: number of epochs to train
         :param batch_size: batch size to use
 
         :return: the loss at the end of each epoch
         """
+
+        # copy the list, since we shuffle it in-place
+        train_examples = list(train_examples)
+
         optimizer = torch.optim.SGD(self.parameters(), lr=0.01, momentum=0.9)
         losses = list()
 
-        num_batches = np.floor(len(x) / batch_size)
+        num_batches = np.floor(len(train_examples) / batch_size)
 
         for epoch in range(epochs):
             logging.warning(f'Epoch {epoch}')
-            np.random.shuffle(x)
+            np.random.shuffle(train_examples)
             batch_index = 0
             epoch_loss = 0.0
             while batch_index < num_batches:
                 optimizer.zero_grad()
 
-                states, policies, values = list(zip(*x[batch_index * batch_size: (batch_index + 1) * batch_size]))
+                states, policies, values = list(zip(*train_examples[batch_index * batch_size: (batch_index + 1) * batch_size]))
                 states = torch.cat(states)
                 policies = torch.cat(policies)
                 values = torch.cat(values)
