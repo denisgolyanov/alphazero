@@ -17,13 +17,12 @@ class Evaluation(object):
         self.agentA = agentA
         self.agentB = agentB
 
-    def play(self):
+    def play(self, competitive=False):
         """
         Execute an entire self play game.
         :return: the identity of the winning player (GameState.PLAYER_ONE or GameState.PLAYER_TWO) or 0 if game is tied
         """
         logging.info("Starting self play game")
-        competitive = True
 
         game_state = self.game_engine.create_new_game()
 

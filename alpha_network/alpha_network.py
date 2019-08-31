@@ -54,7 +54,7 @@ class AlphaNetwork(nn.Module):
         """
         :return: The square error between the outputs and target values, averaged over the sample size.
         """
-        return torch.sum((targets - outputs.view(-1))**2) / outputs.size()[0]
+        return torch.sum((targets - outputs)**2) / outputs.size()[0]
 
     def forward_batch(self, states, target_policies, target_values):
         """
@@ -76,13 +76,17 @@ class AlphaNetwork(nn.Module):
 
         :return: the loss at the end of each epoch
         """
-        optimizer = torch.optim.SGD(self.parameters(), lr=0.1, momentum=0.9)
+        optimizer = torch.optim.SGD(self.parameters(), lr=0.01, momentum=0.9)
         losses = list()
+
+        num_batches = np.floor(len(x) / batch_size)
 
         for epoch in range(epochs):
             logging.warning(f'Epoch {epoch}')
+            np.random.shuffle(x)
             batch_index = 0
-            while batch_index < np.ceil(len(x) / batch_size):
+            epoch_loss = 0.0
+            while batch_index < num_batches:
                 optimizer.zero_grad()
 
                 states, policies, values = list(zip(*x[batch_index * batch_size: (batch_index + 1) * batch_size]))
@@ -98,9 +102,21 @@ class AlphaNetwork(nn.Module):
                 optimizer.step()
 
                 batch_index += 1
-                losses += [loss.item()]
+                epoch_loss += loss.item()
+
+            losses += [epoch_loss / num_batches]
 
         return losses
+
+    def save_checkpoint(self):
+        import datetime
+        torch.save({
+            'state_dict': self.state_dict(),
+        }, datetime.datetime.now().isoformat().replace(':', '_').replace('.', '_'))
+
+    def load_checkpoint(self, filename):
+        checkpoint = torch.load(filename, map_location='cpu')
+        self.load_state_dict(checkpoint['state_dict'])
 
 
 

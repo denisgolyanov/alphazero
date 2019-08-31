@@ -67,7 +67,7 @@ class SelfPlay(object):
         while not game_state.game_over():
             logging.info(f"\r\n{game_state}")
 
-            next_action, mcts_probabilities_tensor = self._agent.choose_action(competitive=True,
+            next_action, mcts_probabilities_tensor = self._agent.choose_action(competitive=False,
                                                                                fetch_probabilities=True)
 
             training_examples.append(TrainingExample(game_state, mcts_probabilities_tensor))
