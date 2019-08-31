@@ -11,3 +11,6 @@ class TickTackToeAction(GameAction):
 
     def __eq__(self, other):
         return self.row == other.row and self.col == other.col
+
+    def __repr__(self):
+        return str(self)

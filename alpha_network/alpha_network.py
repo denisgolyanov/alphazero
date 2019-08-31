@@ -115,12 +115,17 @@ class AlphaNetwork(nn.Module):
 
     def save_checkpoint(self):
         import datetime
+        file_name = datetime.datetime.now().isoformat().replace(':', '_').replace('.', '_')
+
+        logging.info(f"Storing checkpoint at {file_name}")
+
         torch.save({
             'state_dict': self.state_dict(),
-        }, datetime.datetime.now().isoformat().replace(':', '_').replace('.', '_'))
+        }, file_name)
 
-    def load_checkpoint(self, filename):
-        checkpoint = torch.load(filename, map_location='cpu')
+    def load_checkpoint(self, file_name):
+        logging.info(f"Loading CPU checkpoint from {file_name}")
+        checkpoint = torch.load(file_name, map_location='cpu')
         self.load_state_dict(checkpoint['state_dict'])
 
 
