@@ -155,7 +155,29 @@ def pit(game_engine, previous_network, current_network):
         print(f"No improvement")
         return False
 
-__main__()
+
+def compete_with_user(checkpoint_name):
+    single_channel_zize = 9
+    num_input_channels = 1
+    num_possible_actions = 9
+
+    game_engine = TickTackToeGameEngine()
+
+    network = AlphaNetwork(RESIDUAL_DEPTH, single_channel_zize, num_input_channels, num_possible_actions)
+    network = network.double()
+    network.load_checkpoint(checkpoint_name)
+
+    agent_a = AlphaZeroAgent(TickTackToePredictionNetwork(network), game_engine, num_simulations=NUM_SIMULATIONS)
+    from useragent import UserAgent
+    print(f"Result: {Evaluation(game_engine, agent_a, UserAgent()).play(True)}")
+
+    agent_a = AlphaZeroAgent(TickTackToePredictionNetwork(network), game_engine, num_simulations=NUM_SIMULATIONS)
+    print(f"Result: {Evaluation(game_engine, UserAgent(), agent_a).play(True)}")
+
+
+
+compete_with_user("2019-08-31T10_14_38_027338")
+#__main__()
 
 
 
