@@ -32,11 +32,11 @@ class Evaluation(object):
             # TODO: improve according to actual player.
 
             if game_state.get_player() == GameState.PLAYER_ONE:
-                next_action = self.agentA.choose_action(competitive)
-                self.agentB.update_simulator(next_action)
+                next_action = self.agentA.choose_action(competitive, game_state)
+                self.agentB.notify_of_action(next_action)
             elif game_state.get_player() == GameState.PLAYER_TWO:
-                next_action = self.agentB.choose_action(competitive)
-                self.agentA.update_simulator(next_action)
+                next_action = self.agentB.choose_action(competitive, game_state)
+                self.agentA.notify_of_action(next_action)
             else:
                 raise Exception("Neither of players' turn")
             logging.info(f"Suggested action: {next_action}")
