@@ -56,6 +56,8 @@ class HtmfBoard(object):
         return None
 
     def hexes_from_to(self, start_hex, end_hex):
+        assert start_hex is not end_hex
+        
         coords1 = start_hex.coords()
         coords2 = end_hex.coords()
         line_hexes = set()
