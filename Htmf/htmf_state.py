@@ -10,10 +10,12 @@ class HtmfState(GameState):
         assert current_player in [self.PLAYER_ONE, self.PLAYER_TWO]
 
     def _next_player(self):
-        if self._current_player == self.PLAYER_TWO and self._board.can_move(self.PLAYER_ONE):
-            return self.PLAYER_ONE
+        next_player = self.PLAYER_ONE if self._current_player == self.PLAYER_TWO else self.PLAYER_TWO
+
+        if self._board.can_move(self._current_player):
+            return next_player
         else:
-            return self.PLAYER_TWO
+            return self._current_player
 
     def do_action(self, action):
         assert isinstance(action, HtmfAction)
