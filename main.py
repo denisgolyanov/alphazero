@@ -1,5 +1,7 @@
 from time import time
 
+from alphazeroagent import AlphaZeroAgent
+from evaluation import Evaluation
 from self_play import SelfPlay
 from TicTacToe.tick_tack_toe_prediction_network import TickTackToePredictionNetwork
 from TicTacToe.tick_tack_toe_game_engine import TickTackToeGameEngine
@@ -10,9 +12,10 @@ from Htmf.htmf_game_engine import HtmfGameEngine
 
 import logging
 
-logging.basicConfig(level=logging.WARN)
-logging.info("Hello world")
+logging.basicConfig(level=logging.INFO)
 
+AGENT_A_SIMULATIONS = 1000
+AGENT_B_SIMULATIONS = 1000
 
 def __main__():
     times = []
@@ -27,15 +30,21 @@ def __main__():
 
     scores = {0 : 0, GameState.PLAYER_ONE: 0, GameState.PLAYER_TWO: 0}
     times.append(time())
-    for i in range(10):
-        self_play_engine = SelfPlay(HtmfPredictionNetwork(), HtmfGameEngine())
-        scores[self_play_engine.play()] += 1
+    for i in range(20):
+        game_engine = HtmfGameEngine()
+        agentA = AlphaZeroAgent(HtmfPredictionNetwork(), game_engine,
+                                num_simulations=AGENT_A_SIMULATIONS)
+        agentB = AlphaZeroAgent(HtmfPredictionNetwork(), game_engine,
+                                num_simulations=AGENT_B_SIMULATIONS)
+        evaluation = Evaluation(game_engine, agentA, agentB)
+        scores[evaluation.play()] += 1
     times.append(time())
-    print(scores)
+    logging.info(f"{AGENT_A_SIMULATIONS} vs {AGENT_B_SIMULATIONS} scores: {scores}")
 
-    print(times)
-    print(times[1] - times[0])
+    logging.debug(times)
+    logging.warning(f"total run seconds {times[1] - times[0]}")
 #    print(times[3] - times[2])
+
 
 # board = TickTakToeBoard()
 # board = board.make_move(1, 1, 1)

@@ -9,3 +9,5 @@ class TickTackToeAction(GameAction):
     def __str__(self):
         return "[ACTION (%d, %d)]" % (self.row, self.col)
 
+    def __eq__(self, other):
+        return self.row == other.row and self.col == other.col
