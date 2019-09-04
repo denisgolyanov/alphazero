@@ -27,6 +27,8 @@ class HtmfState(GameState):
         return self._current_player
 
     def get_game_score(self):
+        assert self.game_over()
+        
         scores = self._board.get_game_score()
         p1score = scores[GameState.PLAYER_ONE]
         p2score = scores[GameState.PLAYER_TWO]
