@@ -1,7 +1,7 @@
 from interfaces.game_engine import GameEngine
 from interfaces.game_state import GameState
 from interfaces.prediction_network import PredictionNetwork
-from utils import logger, EXTREME_DEBUG_LEVEL
+from utils import logger
 
 from mcts.simulator import MCTSSimulator
 from alpha_zero_agent import AlphaZeroAgent
@@ -28,7 +28,7 @@ class Evaluation(object):
         game_state = self.game_engine.create_new_game()
 
         while not game_state.game_over():
-            logger.log(EXTREME_DEBUG_LEVEL, f"\r\n{game_state}")
+            logger.verbose_debug(f"\r\n{game_state}")
 
             if game_state.get_player() == GameState.PLAYER_ONE:
                 next_action = self.agentA.choose_action(self.competitive, game_state)
@@ -39,18 +39,18 @@ class Evaluation(object):
             else:
                 raise Exception("Neither of players' turn")
 
-            logger.log(EXTREME_DEBUG_LEVEL, f"Suggested action: {next_action}")
+            logger.verbose_debug(f"Suggested action: {next_action}")
             game_state = game_state.do_action(next_action)
 
-        logger.log(EXTREME_DEBUG_LEVEL, f"\r\nFinal {game_state}")
-        logger.log(EXTREME_DEBUG_LEVEL, f"Player: {game_state.get_player()}, game value: {game_state.get_game_score()}")
+        logger.verbose_debug(f"\r\nFinal {game_state}")
+        logger.verbose_debug(f"Player: {game_state.get_player()}, game value: {game_state.get_game_score()}")
 
         return game_state.get_game_score()
 
     def play_n_games(self, number_of_games):
         assert number_of_games % 2 == 0
         for i in range(number_of_games):
-            logger.debug(f"Eval round {i}")
+            logger.debug(f"Eval round {i}/{number_of_games}")
             if i == number_of_games / 2:
                 self._switch_players()
 

@@ -41,19 +41,19 @@ def __main__():
     all_examples = []
     logger.info("Starting")
     for episode in range(num_episodes):
-        logger.info(f"episode: {episode}")
+        logger.info(f"episode: {episode}/{num_episodes}")
 
         current_network = copy.deepcopy(previous_network)
 
         for game in range(num_games_per_episode):
-            logger.debug(f"Episode {episode} - Self-Playing game number {game}")
+            logger.debug(f"Episode {episode} - Self-Playing game number {game}/{num_games_per_episode}")
             self_play_engine = SelfPlay(TickTackToePredictionNetwork(current_network), game_engine, NUM_SIMULATIONS)
             game_score, training_examples = self_play_engine.play()
             all_examples.extend(training_examples)
 
         all_examples = list(reversed(list(reversed(all_examples))[:num_examples_history]))
-        losses = current_network.train(all_examples, epochs=NUM_EPOCHS, batch_size=32)
         logger.info(f"current size of all_examples is {len(all_examples)}")
+        losses = current_network.train(all_examples, epochs=NUM_EPOCHS, batch_size=32)
 
         if evaluate_vs_previous(game_engine, previous_network, current_network):
             logger.info("Saving checkpoint")
@@ -76,7 +76,7 @@ def evaluate_competitive(game_engine, previous_network, current_network):
 
     evaluation = Evaluation(game_engine, agent_a, agent_b, competitive=True)
     game_score = evaluation.play_n_games(2) # 1 game for each side, because they're deterministic
-    logger.info(f"Competitive evalulation score, new agent is 1st player: {game_score}")
+    logger.info(f"Competitive evalulation score, new agent is 2st player: {game_score}")
 
 
 def evaluate_random(game_engine, current_network):

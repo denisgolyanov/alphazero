@@ -1,5 +1,4 @@
-from utils import logger, EXTREME_DEBUG_LEVEL
-import numpy as np
+from utils import logger
 from operator import attrgetter
 from mcts.tree_node import TreeNode
 from interfaces.game_state import GameState
@@ -55,7 +54,7 @@ class MCTSSimulator(object):
 
     def execute_simulations(self, num_simulations):
         for i in range(num_simulations):
-            logger.debug(f"Simulation {i}")
+            logger.verbose_debug(f"Simulation {i}")
             self._single_simulation()
 
     def compute_next_action_probabilities(self):
@@ -73,9 +72,9 @@ class MCTSSimulator(object):
             return child_node.visit_count / (1.0 * total_visit_count)
 
         probabilities = [(child_node.action, _child_node_probability(child_node)) for child_node in self.root.children]
-        logger.log(EXTREME_DEBUG_LEVEL, 'Action probabilities: %s', str([prob for action, prob in probabilities]))
-        logger.log(EXTREME_DEBUG_LEVEL, 'Children: %s', str([str(child_node) for child_node in self.root.children]))
-        logger.log(EXTREME_DEBUG_LEVEL, 'Scores: %s', str([str(child_node.selection_score) for child_node in self.root.children]))
+        logger.verbose_debug('Action probabilities: %s', str([prob for action, prob in probabilities]))
+        logger.verbose_debug('Children: %s', str([str(child_node) for child_node in self.root.children]))
+        logger.verbose_debug('Scores: %s', str([str(child_node.selection_score) for child_node in self.root.children]))
 
         return probabilities
 
