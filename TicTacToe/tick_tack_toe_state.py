@@ -49,23 +49,16 @@ class TickTackToeState(GameState):
         and self._current_player == other._current_player
 
     def convert_to_tensor(self):
-        tensor = torch.empty([1, 1, 3, 3], dtype=torch.double)
+        tensor = torch.zeros([1, 3, 3, 3], dtype=torch.double)
+        turn_value = 0 if self.get_player() == GameState.PLAYER_ONE else 1
+
         for i in range(3):
             for j in range(3):
-                tensor[0, 0, i, j] = self._board[i, j]
+                tensor[0, 0, i, j] = turn_value
+
+        for i in range(3):
+            for j in range(3):
+                tensor[0, self._board[i, j], i, j] = 1
 
         return tensor
 
-    @staticmethod
-    def convert_from_tensor(tensor):
-        board = TickTakToeBoard()
-        for i in range(3):
-            for j in range(3):
-                board[i, j] = tensor[3*i + j]
-
-        num_xes = sum([board[i, j] == 1 for i, j in itertools.product(range(3), range(3))])
-        num_os = sum([board[i, j] == 2 for i, j in itertools.product(range(3), range(3))])
-
-        turn = TickTackToeState.PLAYER_ONE if num_os == num_xes else TickTackToeState.PLAYER_TWO
-
-        return TickTackToeState(board, turn)

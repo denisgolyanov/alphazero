@@ -1,5 +1,3 @@
-import logging
-
 from alpha_zero_agent import AlphaZeroAgent
 from evaluation import Evaluation
 from random_agent import RandomAgent
@@ -25,7 +23,7 @@ def __main__():
     # specifications for tic-tack-toe
     game_engine = TickTackToeGameEngine()
     single_channel_size = 9
-    num_input_channels = 1
+    num_input_channels = 3
     num_possible_actions = 9
     training_examples_per_game = 9
 

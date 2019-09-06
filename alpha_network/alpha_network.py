@@ -7,7 +7,6 @@ from alpha_network.value_head import ValueHead
 
 import torch
 import numpy as np
-import logging
 from utils import logger
 
 
@@ -117,14 +116,14 @@ class AlphaNetwork(nn.Module):
         import datetime
         file_name = datetime.datetime.now().isoformat().replace(':', '_').replace('.', '_')
 
-        logging.info(f"Storing checkpoint at {file_name}")
+        logger.info(f"Storing checkpoint at {file_name}")
 
         torch.save({
             'state_dict': self.state_dict(),
         }, file_name)
 
     def load_checkpoint(self, file_name):
-        logging.info(f"Loading CPU checkpoint from {file_name}")
+        logger.info(f"Loading CPU checkpoint from {file_name}")
         checkpoint = torch.load(file_name, map_location='cpu')
         self.load_state_dict(checkpoint['state_dict'])
 
