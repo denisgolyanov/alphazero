@@ -1,9 +1,10 @@
 from mcts.simulator import MCTSSimulator
+from interfaces.game_agent import GameAgent
 
 import numpy as np
 
 
-class AlphaZeroAgent(object):
+class AlphaZeroAgent(GameAgent):
     def __init__(self, prediction_network, game_engine, num_simulations):
         self.prediction_network = prediction_network
         self.game_engine = game_engine
@@ -37,3 +38,7 @@ class AlphaZeroAgent(object):
 
         return np.random.choice([pair[0] for pair in action_probability_pairs],
                                 p=[pair[1] for pair in action_probability_pairs])
+
+    def restart_game(self):
+        self.simulator = self._create_new_simulator()
+

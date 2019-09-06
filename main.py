@@ -1,8 +1,8 @@
 import logging
 
-from alphazeroagent import AlphaZeroAgent
+from alpha_zero_agent import AlphaZeroAgent
 from evaluation import Evaluation
-from randomagent import RandomAgent
+from random_agent import RandomAgent
 from self_play import SelfPlay
 from TicTacToe.tick_tack_toe_prediction_network import TickTackToePredictionNetwork
 from TicTacToe.tick_tack_toe_game_engine import TickTackToeGameEngine
@@ -121,7 +121,7 @@ def compete_with_user(checkpoint_name):
     network.load_checkpoint(checkpoint_name)
 
     agent_a = AlphaZeroAgent(TickTackToePredictionNetwork(network), game_engine, num_simulations=NUM_SIMULATIONS)
-    from useragent import UserAgent
+    from user_agent import UserAgent
     print(f"Result: {Evaluation(game_engine, agent_a, UserAgent(), competitive=True).play()}")
 
     agent_a = AlphaZeroAgent(TickTackToePredictionNetwork(network), game_engine, num_simulations=NUM_SIMULATIONS)

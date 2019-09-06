@@ -1,7 +1,7 @@
 from interfaces.game_engine import GameEngine
 from interfaces.game_state import GameState
 from interfaces.prediction_network import PredictionNetwork
-from alphazeroagent import AlphaZeroAgent
+from alpha_zero_agent import AlphaZeroAgent
 from utils import logger, EXTREME_DEBUG_LEVEL
 import logging
 import torch

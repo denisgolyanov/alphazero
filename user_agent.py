@@ -1,11 +1,12 @@
 import random
 
+from interfaces.game_agent import GameAgent
 from mcts.simulator import MCTSSimulator
 
 import numpy as np
 
 
-class UserAgent(object):
+class UserAgent(GameAgent):
 
     def notify_of_action(self, action):
         pass
@@ -17,3 +18,7 @@ class UserAgent(object):
         index = int(input("Choose action index "))
         print(f"choosing {actions[index]}")
         return actions[index]
+
+    def restart_game(self):
+        print(f"Restarting game")
+

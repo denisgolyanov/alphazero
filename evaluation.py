@@ -4,7 +4,7 @@ from interfaces.prediction_network import PredictionNetwork
 from utils import logger, EXTREME_DEBUG_LEVEL
 
 from mcts.simulator import MCTSSimulator
-from alphazeroagent import AlphaZeroAgent
+from alpha_zero_agent import AlphaZeroAgent
 
 
 class Evaluation(object):
@@ -22,7 +22,7 @@ class Evaluation(object):
 
     def play(self):
         """
-        Execute an entire self play game.
+        Executes a single game
         :return: the identity of the winning player (GameState.PLAYER_ONE or GameState.PLAYER_TWO) or 0 if game is tied
         """
         game_state = self.game_engine.create_new_game()
@@ -54,7 +54,9 @@ class Evaluation(object):
             if i == number_of_games / 2:
                 self._switch_players()
 
-            self.scores[self.play(competitive=self.competitive)] += 1
+            self.scores[self.play()] += 1
+            self.agentA.restart_game()
+            self.agentB.restart_game()
 
         # switch scores again, agentB's winnings will be reported as player B
         self._switch_players()
