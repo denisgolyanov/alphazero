@@ -7,6 +7,8 @@ from alpha_network.value_head import ValueHead
 
 import torch
 import numpy as np
+import pickle
+
 from utils import logger
 
 
@@ -112,7 +114,7 @@ class AlphaNetwork(nn.Module):
 
         return losses
 
-    def save_checkpoint(self, game_name):
+    def save_checkpoint(self, game_name, examples_history):
         import datetime
         file_name = game_name + datetime.datetime.now().isoformat().replace(':', '_').replace('.', '_')
 
@@ -121,6 +123,9 @@ class AlphaNetwork(nn.Module):
         torch.save({
             'state_dict': self.state_dict(),
         }, file_name)
+
+        with open(file_name + "_history", 'wb') as f:
+            f.write(pickle.dumps(examples_history))
 
     def load_checkpoint(self, file_name):
         logger.info(f"Loading CPU checkpoint from {file_name}")

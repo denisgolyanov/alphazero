@@ -1,6 +1,7 @@
 import copy
+import pickle
 
-from TicTacToe.tick_tack_toe_training_spec import TickTackToeTrainingSpecification
+from interfaces.training_spec import TrainingSpecification
 from alpha_network.alpha_network import AlphaNetwork
 from alpha_zero_agent import AlphaZeroAgent
 from evaluation import Evaluation
@@ -12,7 +13,7 @@ from user_agent import UserAgent
 
 
 def train(train_specification):
-    assert isinstance(train_specification, TickTackToeTrainingSpecification)
+    assert isinstance(train_specification, TrainingSpecification)
     logger.info(f"{train_specification}")
 
     previous_network = AlphaNetwork(train_specification.residual_depth,
@@ -47,7 +48,7 @@ def train(train_specification):
         if evaluate_vs_previous(train_specification, previous_network, current_network):
             logger.info("Saving checkpoint")
             previous_network = current_network
-            previous_network.save_checkpoint(train_specification.game_name)
+            previous_network.save_checkpoint(train_specification.game_name, all_examples)
         else:
             # retain examples from previous episode
             pass
