@@ -26,3 +26,6 @@ def verbose_debug(logger, *args, **kwargs):
     logger.log(EXTREME_DEBUG_LEVEL, *args, **kwargs)
 
 logger.verbose_debug = types.MethodType(verbose_debug, logger)
+
+
+CUDA = False

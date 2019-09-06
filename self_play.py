@@ -5,6 +5,8 @@ from alpha_zero_agent import AlphaZeroAgent
 from utils import logger
 import torch
 
+from utils import CUDA
+
 
 class TrainingExample(object):
     def __init__(self, game_state, action_probability_tensor):
@@ -32,9 +34,14 @@ class TrainingExample(object):
     def to_tensor_tuple(self):
         value_tensor = torch.empty(1, 1, dtype=torch.double)
         value_tensor[0, 0] = self._value
+        if CUDA:
+            return (self._game_state.convert_to_tensor().cuda(),
+                    self._action_probability_tesnor.cuda(),
+                    value_tensor.cuda())
+
         return (self._game_state.convert_to_tensor(),
                 self._action_probability_tesnor,
-                value_tensor)  # TODO: tensor creation should be uniform
+                value_tensor)
 
 
 class SelfPlay(object):

@@ -8,7 +8,7 @@ from evaluation import Evaluation
 from interfaces.game_state import GameState
 from random_agent import RandomAgent
 from self_play import SelfPlay
-from utils import logger
+from utils import logger, CUDA
 from user_agent import UserAgent
 
 
@@ -21,6 +21,8 @@ def train(train_specification):
                                     train_specification.num_input_channels,
                                     train_specification.total_possible_actions)
     previous_network = previous_network.double()
+    if CUDA:
+        previous_network = previous_network.cuda()
 
     num_games_history = train_specification.num_games_per_episode * train_specification.num_history_episodes
     num_examples_history = num_games_history * train_specification.training_examples_per_game
@@ -112,6 +114,8 @@ def compete_with_user(train_spec, checkpoint_name):
                            train_spec.num_input_channels,
                            train_spec.total_possible_actions)
     network = network.double()
+    if CUDA:
+        network = network.cuda()
     network.load_checkpoint(checkpoint_name)
 
     agent_a = AlphaZeroAgent(train_spec.prediction_network(network), train_spec.game_engine(),
