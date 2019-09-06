@@ -112,9 +112,9 @@ class AlphaNetwork(nn.Module):
 
         return losses
 
-    def save_checkpoint(self):
+    def save_checkpoint(self, game_name):
         import datetime
-        file_name = datetime.datetime.now().isoformat().replace(':', '_').replace('.', '_')
+        file_name = game_name + datetime.datetime.now().isoformat().replace(':', '_').replace('.', '_')
 
         logger.info(f"Storing checkpoint at {file_name}")
 

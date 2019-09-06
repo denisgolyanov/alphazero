@@ -82,7 +82,7 @@ def evaluate_random(game_engine, current_network):
     agent_a = RandomAgent()
     current_prediction_network = TickTackToePredictionNetwork(current_network)
     agent_b = AlphaZeroAgent(current_prediction_network, game_engine, num_simulations=NUM_SIMULATIONS)
-    evaluation = Evaluation(game_engine, agent_a, agent_b)
+    evaluation = Evaluation(game_engine, agent_a, agent_b, competitive=True)
     scores = evaluation.play_n_games(NUM_RANDOM_GAMES)
 
     logger.info(f"Eval scores vs random agent {scores}")
