@@ -81,3 +81,7 @@ class TickTackToeTrainingSpecification(TrainingSpecification):
     def game_name(self):
         return "tick_tack_toe"
 
+    def training_augmentor(self):
+        return None
+
+

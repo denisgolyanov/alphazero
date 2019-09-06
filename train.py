@@ -38,7 +38,8 @@ def train(train_specification):
             logger.debug(f"Episode {episode} - Self-Playing game number {game}/{train_specification.num_games_per_episode}")
             self_play_engine = SelfPlay(train_specification.prediction_network(current_network),
                                         train_specification.game_engine(),
-                                        train_specification.num_simulations)
+                                        train_specification.num_simulations,
+                                        train_specification.training_augmentor())
 
             game_score, training_examples = self_play_engine.play()
             all_examples.extend(training_examples)
@@ -120,9 +121,9 @@ def compete_with_user(train_spec, checkpoint_name):
 
     agent_a = AlphaZeroAgent(train_spec.prediction_network(network), train_spec.game_engine(),
                              num_simulations=train_spec.num_simulations)
-    print(f"Result: {Evaluation(game_engine, agent_a, UserAgent(), competitive=True).play()}")
+    print(f"Result: {Evaluation(train_spec.game_engine(), agent_a, UserAgent(), competitive=True).play()}")
 
     agent_a = AlphaZeroAgent(train_spec.prediction_network(network), train_spec.game_engine(),
                              num_simulations=train_spec.num_simulations)
-    print(f"Result: {Evaluation(game_engine, UserAgent(), agent_a, competitive=True).play()}")
+    print(f"Result: {Evaluation(train_spec.game_engine(), UserAgent(), agent_a, competitive=True).play()}")
 

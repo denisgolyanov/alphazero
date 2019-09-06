@@ -63,7 +63,8 @@ class ConnectFourTrainingSpecification(TrainingSpecification):
 
     @property
     def training_examples_per_game(self):
-        return self._rows * self._cols
+        # factor 2 due to generated symmetries
+        return self._rows * self._cols * 2
 
     def prediction_network(self, alpha_network):
         return ConnectFourPredictionNetwork(alpha_network, self._cols)
@@ -83,4 +84,7 @@ class ConnectFourTrainingSpecification(TrainingSpecification):
     @property
     def game_name(self):
         return "connect_four"
+
+    def training_augmentor(self):
+        return ConnectFourTrainingAugmentor()
 

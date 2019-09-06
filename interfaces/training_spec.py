@@ -88,6 +88,14 @@ class TrainingSpecification(object, metaclass=abc.ABCMeta):
     def game_name(self):
         pass
 
+    @abc.abstractmethod
+    def training_augmentor(self):
+        """
+        :return: an augmentor that may generate additional training examples from given training example
+                 return None if no augmentation is implemented
+        """
+        pass
+
     def __str__(self):
         return f""" {self.game_name}
         residual depth: {self.residual_depth}

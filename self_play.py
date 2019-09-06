@@ -45,11 +45,12 @@ class TrainingExample(object):
 
 
 class SelfPlay(object):
-    def __init__(self, network, game_engine, num_simulation_iterations):
+    def __init__(self, network, game_engine, num_simulation_iterations, training_augmentor=None):
         """
         :param network: a PredictionNetwork object
         :param game_engine: a GameEngine object
         :param simulation_iterations: number of iterations to perform each turn
+        :param training_augmentor: augments generated training examples with symmetries [optional]
         """
         assert isinstance(network, PredictionNetwork)
         assert isinstance(game_engine, GameEngine)
@@ -57,6 +58,7 @@ class SelfPlay(object):
         self.network = network
         self.game_engine = game_engine
         self._agent = AlphaZeroAgent(self.network, self.game_engine, num_simulation_iterations)
+        self._training_augmentor = training_augmentor
 
     def play(self):
         """
@@ -77,6 +79,8 @@ class SelfPlay(object):
                                                                                fetch_probabilities=True)
 
             training_examples.append(TrainingExample(game_state, mcts_probabilities_tensor))
+            if self._training_augmentor:
+                training_examples.extend(self._training_augmentor.augment(training_examples[-1]))
 
             logger.verbose_debug(f"Suggested action: {next_action}")
             game_state = game_state.do_action(next_action)
