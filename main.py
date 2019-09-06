@@ -78,6 +78,7 @@ def evaluate_competitive(game_engine, previous_network, current_network):
     game_score = evaluation.play_n_games(2) # 1 game for each side, because they're deterministic
     logger.info(f"Competitive evalulation score, new agent is 1st player: {game_score}")
 
+
 def evaluate_random(game_engine, current_network):
     logger.info("evaluating against random agent...")
     agent_a = RandomAgent()
@@ -87,6 +88,7 @@ def evaluate_random(game_engine, current_network):
     scores = evaluation.play_n_games(NUM_RANDOM_GAMES)
 
     logger.info(f"Eval scores vs random agent {scores}")
+
 
 def evaluate_vs_previous(game_engine, previous_network, current_network):
     logger.info("Evaluation has begun")
@@ -120,11 +122,10 @@ def compete_with_user(checkpoint_name):
 
     agent_a = AlphaZeroAgent(TickTackToePredictionNetwork(network), game_engine, num_simulations=NUM_SIMULATIONS)
     from useragent import UserAgent
-    print(f"Result: {Evaluation(game_engine, agent_a, UserAgent()).play(True)}")
+    print(f"Result: {Evaluation(game_engine, agent_a, UserAgent(), competitive=True).play()}")
 
     agent_a = AlphaZeroAgent(TickTackToePredictionNetwork(network), game_engine, num_simulations=NUM_SIMULATIONS)
-    print(f"Result: {Evaluation(game_engine, UserAgent(), agent_a).play(True)}")
-
+    print(f"Result: {Evaluation(game_engine, UserAgent(), agent_a, competitive=True).play()}")
 
 
 #compete_with_user("2019-08-31T10_14_38_027338")
