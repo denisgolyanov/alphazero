@@ -21,8 +21,6 @@ def train(train_specification):
                                     train_specification.num_input_channels,
                                     train_specification.total_possible_actions)
     previous_network = previous_network.double()
-    if CUDA:
-        previous_network = previous_network.cuda()
 
     num_games_history = train_specification.num_games_per_episode * train_specification.num_history_episodes
     num_examples_history = num_games_history * train_specification.training_examples_per_game
@@ -47,15 +45,20 @@ def train(train_specification):
 
         all_examples = list(reversed(list(reversed(all_examples))[:num_examples_history]))
         logger.info(f"current size of all_examples is {len(all_examples)}")
-        losses = current_network.train(all_examples, epochs=train_specification.num_epochs, batch_size=32)
+        if CUDA:
+            logger.info("will use cuda during training")
+            current_network = current_network.cuda()
+
+        losses = current_network.train(all_examples, epochs=train_specification.num_epochs, batch_size=64)
+        current_network = current_network.cpu()
 
         if evaluate_vs_previous(train_specification, previous_network, current_network):
             logger.info("Saving checkpoint")
             previous_network = current_network
             previous_network.save_checkpoint(train_specification.game_name, all_examples)
         else:
-            # retain examples from previous episode
-            pass
+            # retain examples from previous episode, but store checkpoint regardless
+            current_network.save_checkpoint(train_specification.game_name, all_examples)
 
         evaluate_competitive(train_specification, previous_network, current_network)
         evaluate_random(train_specification, current_network)

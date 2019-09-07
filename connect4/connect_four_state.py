@@ -1,10 +1,7 @@
-from connect4.connect_four_board import ConnectFourBoard
 from interfaces.game_state import GameState
 from connect4.connect_four_action import ConnectFourAction
 
-import itertools
 import torch
-from utils import CUDA
 
 
 class ConnectFourState(GameState):
@@ -51,8 +48,6 @@ class ConnectFourState(GameState):
 
     def convert_to_tensor(self):
         tensor = torch.zeros([1, 3, self._board.rows, self._board.cols], dtype=torch.double)
-        if CUDA:
-            tensor = tensor.cuda()
         turn_value = 0 if self.get_player() == GameState.PLAYER_ONE else 1
 
         for i in range(self._board.rows):

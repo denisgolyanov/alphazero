@@ -28,4 +28,4 @@ def verbose_debug(logger, *args, **kwargs):
 logger.verbose_debug = types.MethodType(verbose_debug, logger)
 
 
-CUDA = False
+CUDA = True
