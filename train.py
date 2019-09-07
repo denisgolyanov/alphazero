@@ -12,7 +12,7 @@ from utils import logger, CUDA
 from user_agent import UserAgent
 
 
-def train(train_specification):
+def train(train_specification, checkpoint=None):
     assert isinstance(train_specification, TrainingSpecification)
     logger.info(f"{train_specification}")
 
@@ -22,10 +22,13 @@ def train(train_specification):
                                     train_specification.total_possible_actions)
     previous_network = previous_network.double()
 
+    all_examples = []
+    if checkpoint:
+        all_examples = previous_network.load_checkpoint(checkpoint)
+
     num_games_history = train_specification.num_games_per_episode * train_specification.num_history_episodes
     num_examples_history = num_games_history * train_specification.training_examples_per_game
 
-    all_examples = []
     logger.info("Starting")
     for episode in range(train_specification.num_episodes):
         logger.info(f"episode: {episode}/{train_specification.num_episodes}")

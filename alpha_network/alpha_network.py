@@ -9,7 +9,7 @@ import torch
 import numpy as np
 import pickle
 
-from utils import logger
+from utils import logger, CUDA
 
 
 class AlphaNetwork(nn.Module):
@@ -131,6 +131,13 @@ class AlphaNetwork(nn.Module):
         logger.info(f"Loading CPU checkpoint from {file_name}")
         checkpoint = torch.load(file_name, map_location='cpu')
         self.load_state_dict(checkpoint['state_dict'])
+
+        with open(file_name + "_history", 'rb') as f:
+            result = pickle.loads(f.read())
+        if CUDA:
+            result = [(item[0].cuda(), item[1].cuda(), item[2].cuda()) for item in result]
+        return result
+
 
 
 
