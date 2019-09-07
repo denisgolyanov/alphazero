@@ -39,7 +39,8 @@ def train(train_specification):
             self_play_engine = SelfPlay(train_specification.prediction_network(current_network),
                                         train_specification.game_engine(),
                                         train_specification.num_simulations,
-                                        train_specification.training_augmentor())
+                                        train_specification.training_augmentor(),
+                                        train_specification.temperature)
 
             game_score, training_examples = self_play_engine.play()
             all_examples.extend(training_examples)

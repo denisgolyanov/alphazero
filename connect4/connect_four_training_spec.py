@@ -1,16 +1,17 @@
 from connect4.connect_four_game_engine import ConnectFourGameEngine
 from connect4.connect_four_prediction_network import ConnectFourPredictionNetwork
+from connect4.connect_four_training_augmentor import ConnectFourTrainingAugmentor
 from interfaces.training_spec import TrainingSpecification
 
-NUM_SIMULATIONS = 200
+NUM_SIMULATIONS = 150
 NUM_EVALUATE_GAMES = 40
-NUM_RANDOM_GAMES = 40
+NUM_RANDOM_GAMES = 10
 RESIDUAL_DEPTH = 4
 THRESHOLD = 1.05
 NUM_EPOCHS = 10
 NUM_INPUT_CHANNELS = 3
 NUM_EPISODES = 100
-NUM_GAMES_PER_EPISODE = 2
+NUM_GAMES_PER_EPISODE = 50
 NUM_HISTORY_EPISODES = 5
 NUM_ROWS = 6
 NUM_COLS = 7
@@ -87,4 +88,8 @@ class ConnectFourTrainingSpecification(TrainingSpecification):
 
     def training_augmentor(self):
         return ConnectFourTrainingAugmentor()
+
+    @property
+    def temperature(self):
+        return self._rows * self._cols - 10
 

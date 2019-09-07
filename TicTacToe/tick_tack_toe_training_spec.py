@@ -84,4 +84,8 @@ class TickTackToeTrainingSpecification(TrainingSpecification):
     def training_augmentor(self):
         return None
 
+    @property
+    def temperature(self):
+        return None
+
 

@@ -96,6 +96,16 @@ class TrainingSpecification(object, metaclass=abc.ABCMeta):
         """
         pass
 
+    @property
+    @abc.abstractmethod
+    def temperature(self):
+        """
+        Number of moves in a self-play game after which we decide to switch to competitive mode.
+        Prior to this a stochastic approach is used.
+        Optional and may return None if not required.
+        """
+        pass
+
     def __str__(self):
         return f""" {self.game_name}
         residual depth: {self.residual_depth}

@@ -6,7 +6,7 @@ from utils import logger
 import torch
 
 from utils import CUDA
-
+from math import inf
 
 class TrainingExample(object):
     def __init__(self, game_state, action_probability_tensor):
@@ -45,12 +45,13 @@ class TrainingExample(object):
 
 
 class SelfPlay(object):
-    def __init__(self, network, game_engine, num_simulation_iterations, training_augmentor=None):
+    def __init__(self, network, game_engine, num_simulation_iterations, training_augmentor=None, temperature=None):
         """
         :param network: a PredictionNetwork object
         :param game_engine: a GameEngine object
         :param simulation_iterations: number of iterations to perform each turn
         :param training_augmentor: augments generated training examples with symmetries [optional]
+        :param temperature: number of moves after which should change to competitive [optional]
         """
         assert isinstance(network, PredictionNetwork)
         assert isinstance(game_engine, GameEngine)
@@ -59,6 +60,7 @@ class SelfPlay(object):
         self.game_engine = game_engine
         self._agent = AlphaZeroAgent(self.network, self.game_engine, num_simulation_iterations)
         self._training_augmentor = training_augmentor
+        self._temperature = temperature if temperature else inf
 
     def play(self):
         """
@@ -71,11 +73,13 @@ class SelfPlay(object):
 
         training_examples = list()
         game_state = self.game_engine.create_new_game()
+        num_moves = 0
+        competitive = False
 
         while not game_state.game_over():
             logger.verbose_debug(f"\r\n{game_state}")
 
-            next_action, mcts_probabilities_tensor = self._agent.choose_action(competitive=False,
+            next_action, mcts_probabilities_tensor = self._agent.choose_action(competitive=competitive,
                                                                                fetch_probabilities=True)
 
             training_examples.append(TrainingExample(game_state, mcts_probabilities_tensor))
@@ -84,6 +88,12 @@ class SelfPlay(object):
 
             logger.verbose_debug(f"Suggested action: {next_action}")
             game_state = game_state.do_action(next_action)
+            num_moves += 1
+
+            if num_moves == self._temperature:
+                logger.verbose_debug(f"Switching to competitive at move: {num_moves}")
+
+                competitive = True
 
         # update training examples with the winning probability
         game_score = game_state.get_game_score()
