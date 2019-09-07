@@ -49,3 +49,28 @@ class HtmfState(GameState):
 
     def __str__(self):
         return str(self._board) + "TURN: {0}\r\n".format(self._current_player)
+
+    def convert_to_tensor(self):
+        board_length = self._board.length
+        tensor = torch.zeros([1, 4, board_length, board_length], dtype=torch.double)
+
+        #player whose turn it is always appears first in tensor
+        first_player = self._current_player
+        second_player = self.PLAYER_ONE if first_player == self.PLAYER_TWO else self.PLAYER_TWO
+
+        #one hot for "player has penguin here"
+        for penguin in self.board.penguins:
+            if penguin.player == first_player:
+                tensor[0, 0, penguin.bhex.x, penguin.bhex.y] = 1
+
+        for penguin in self.board.penguins:
+            if penguin.player == second_player:
+                tensor[0, 1, penguin.bhex.x, penguin.bhex.y] = 1
+
+        for bhex in self.board.hexes.values():
+            if bhex.player == first_player:
+                tensor[0, 2, bhex.x, bhex.y] = 1
+            elif bhex.player == second_player:
+                tensor[0, 3, bhex.x, bhex.y] = 1
+
+        return tensor
