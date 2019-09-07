@@ -54,19 +54,18 @@ class HtmfState(GameState):
         board_length = self._board.length
         tensor = torch.zeros([1, 4, board_length, board_length], dtype=torch.double)
 
-        #player whose turn it is always appears first in tensor
+        # player whose turn it is always appears first in tensor
         first_player = self._current_player
         second_player = self.PLAYER_ONE if first_player == self.PLAYER_TWO else self.PLAYER_TWO
 
-        #one hot for "player has penguin here"
+        # one hot for "player has penguin here"
         for penguin in self.board.penguins:
             if penguin.player == first_player:
                 tensor[0, 0, penguin.bhex.x, penguin.bhex.y] = 1
-
-        for penguin in self.board.penguins:
             if penguin.player == second_player:
                 tensor[0, 1, penguin.bhex.x, penguin.bhex.y] = 1
 
+        # one hot for "player has taken this tile"
         for bhex in self.board.hexes.values():
             if bhex.player == first_player:
                 tensor[0, 2, bhex.x, bhex.y] = 1
