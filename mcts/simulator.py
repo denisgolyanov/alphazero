@@ -1,5 +1,4 @@
-import logging
-import numpy as np
+from utils import logger
 from operator import attrgetter
 from mcts.tree_node import TreeNode
 from interfaces.game_state import GameState
@@ -8,7 +7,6 @@ from interfaces.game_state import GameState
 class MCTSSimulator(object):
     def __init__(self, network, initial_state):
         """
-
         :param network: a PredictionNetwork implementation object
         :param initial_state: an initial GameState object
         """
@@ -16,11 +14,12 @@ class MCTSSimulator(object):
                              probability_estimation=None, action=None,
                              state=initial_state)
 
-    def update_root(self, root):
-        if root.state is None:
-            root.eval_state()
-        root.parent_node = None
-        self.root = root
+    def update_root_by_action(self, action):
+        new_root = self.root.search_child(action=action)
+        if new_root.state is None:
+            new_root.eval_state()
+        new_root.parent_node = None
+        self.root = new_root
 
     def _single_simulation(self):
         node = self.root
@@ -34,71 +33,48 @@ class MCTSSimulator(object):
                 # tied game
                 pass
 
-            elif node.parent_node.state.get_player() == value:
-                # player who made last move, won
+            # value is relative to the player whose current turn it is
+            elif node.state.get_player() == value:
                 value = 1.0
             else:
-                # player who made last move, lost
                 value = -1.0
-
         else:
-            # the value is the winning chance of the next player, thus the negation
-            value = node.expand() * -1.0
+            value = node.expand()
+
+        player = node.state.get_player()
 
         while not node.is_root():
-            node.backwards_pass(value)
-            node = node.parent_node
-            value *= -1.0
 
+            player_relative_value = value if node.parent_node.state.get_player() == player else -1.0 * value
+            node.backwards_pass(player_relative_value)
+            node = node.parent_node
+
+        # while the Q value is not used for the root, we still need to update visit count
         node.backwards_pass(value)
 
-    def _compute_action_probabilities(self, temperature):
-        def _child_node_probability(child_node):
-            return child_node.visit_count ** temperature / \
-                   (sum([child_node.visit_count ** temperature for child_node in
-                         self.root.children]))
+    def execute_simulations(self, num_simulations):
+        for i in range(num_simulations):
+            logger.verbose_debug(f"Simulation {i}")
+            self._single_simulation()
 
-        return [(child_node.action, _child_node_probability(child_node)) for
-                child_node in self.root.children]
+    def compute_next_action_probabilities(self):
+        """
 
-    def _compute_next_action_competitive(self):
-        best_child_node = max(self.root.children,
-                              key=lambda child_node: child_node.visit_count)
-        logging.debug('Children: %s', str(
-            [str(child_node) for child_node in self.root.children]))
-        logging.debug('Scores: %s', str(
-            [str(child_node.selection_score) for child_node in
-             self.root.children]))
+        :return: A list of pairs <action, probability>, where probability is derived from the
+                 MCTS tree, such that, probability = visit_count / total_visit_count
 
-        return best_child_node.action
-
-    def _compute_next_action_stochastic(self):
-
-        total_visit_count = sum(
-            [child_node.visit_count for child_node in self.root.children])
+        :note:   the output will contain only the moves deemed legal by the game, probability
+                 for discarded moves is implicitly zero.
+        """
+        total_visit_count = sum([child_node.visit_count for child_node in self.root.children])
 
         def _child_node_probability(child_node):
             return child_node.visit_count / (1.0 * total_visit_count)
 
-        probabilities = [_child_node_probability(child_node) for child_node in
-                         self.root.children]
-        logging.debug('Move probabilities: %s', str(probabilities))
-        logging.debug('Children: %s', str(
-            [str(child_node) for child_node in self.root.children]))
-        logging.debug('Scores: %s', str(
-            [str(child_node.selection_score) for child_node in
-             self.root.children]))
+        probabilities = [(child_node.action, _child_node_probability(child_node)) for child_node in self.root.children]
+        logger.verbose_debug('Action probabilities: %s', str([prob for action, prob in probabilities]))
+        logger.verbose_debug('Children: %s', str([str(child_node) for child_node in self.root.children]))
+        logger.verbose_debug('Scores: %s', str([str(child_node.selection_score) for child_node in self.root.children]))
 
-        return np.random.choice(self.root.children, p=probabilities).action
+        return probabilities
 
-    def compute_next_action(self, num_simulations=1600):
-        for i in range(num_simulations):
-            logging.debug(f"Simulation {i}")
-            self._single_simulation()
-
-        competitive = True  # TODO: extract to parameter
-
-        if competitive:
-            return self._compute_next_action_competitive()
-        else:
-            return self._compute_next_action_stochastic()

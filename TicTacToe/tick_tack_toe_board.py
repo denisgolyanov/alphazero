@@ -67,5 +67,9 @@ class TickTakToeBoard(object):
         i, j = item
         return self._board[i][j]
 
+    def __setitem__(self, item, value):
+        i, j = item
+        self._board[i][j] = value
+
     def __eq__(self, other):
         return self._board == other._board

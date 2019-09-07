@@ -1,6 +1,9 @@
+from TicTacToe.tick_tack_toe_board import TickTakToeBoard
 from interfaces.game_state import GameState
 from TicTacToe.tick_tack_toe_action import TickTackToeAction
 
+import itertools
+import torch
 
 class TickTackToeState(GameState):
     def __init__(self, board, current_player):
@@ -44,3 +47,18 @@ class TickTackToeState(GameState):
     def __eq__(self, other):
         return self._board == other._board \
         and self._current_player == other._current_player
+
+    def convert_to_tensor(self):
+        tensor = torch.zeros([1, 3, 3, 3], dtype=torch.double)
+        turn_value = 0 if self.get_player() == GameState.PLAYER_ONE else 1
+
+        for i in range(3):
+            for j in range(3):
+                tensor[0, 0, i, j] = turn_value
+
+        for i in range(3):
+            for j in range(3):
+                tensor[0, self._board[i, j], i, j] = 1
+
+        return tensor
+

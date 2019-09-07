@@ -53,3 +53,10 @@ class GameState(object, metaclass=abc.ABCMeta):
         :return: a visual representation of current state
         """
         raise NotImplementedError()
+
+    @abc.abstractmethod
+    def convert_to_tensor(self):
+        """
+        :return: a tensor representing the current state
+        """
+        raise NotImplementedError()
