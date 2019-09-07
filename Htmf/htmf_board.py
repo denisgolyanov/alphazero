@@ -7,16 +7,17 @@ class IllegalMoveException(Exception):
     pass
 
 class HtmfBoard(object):
-    def __init__(self, radius=None, hexes=None, penguins=None, scores=None):
-        assert (radius is not None) != (hexes is not None and penguins is not None and scores is not None)
+    def __init__(self, length=None, hexes=None, penguins=None, scores=None):
+        assert (length is not None) != (hexes is not None and penguins is not None and scores is not None)
 
-        if radius is not None:
+        if length is not None:
             self.hexes = {(x, y) : Hex(x, y)
                            for x, y in 
                              (coords for coords in 
-                               product(*(list(range(-radius, radius + 1)),)*2))}
+                               product(*(list(range(length)),)*2))}
             self.penguins = set()
             self.scores = {GameState.PLAYER_ONE: 0, GameState.PLAYER_TWO: 0}
+            self.length = length
 
         else:
             self.hexes = hexes
