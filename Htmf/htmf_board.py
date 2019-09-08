@@ -11,10 +11,8 @@ class HtmfBoard(object):
         assert (length is not None) != (hexes is not None and penguins is not None and scores is not None)
 
         if length is not None:
-            self.hexes = {(x, y) : Hex(x, y)
-                           for x, y in 
-                             (coords for coords in 
-                               product(*(list(range(length)),)*2))}
+            self.hexes = {(x, y) : Hex(x, y) for x, y in 
+                            (coords for coords in product(range(length), repeat=2))}
             self.penguins = set()
             self.scores = {GameState.PLAYER_ONE: 0, GameState.PLAYER_TWO: 0}
             self.length = length
