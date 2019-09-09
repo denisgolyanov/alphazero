@@ -7,13 +7,14 @@ class IllegalMoveException(Exception):
     pass
 
 class HtmfBoard(object):
-    def __init__(self, length=None, hexes=None, penguins=None, scores=None):
-        assert (length is not None) != (hexes is not None and penguins is not None and scores is not None)
+    def __init__(self, length=None, hexes=None, penguins=None, scores=None, players_penguins_count=None):
+        assert (length is not None) != (hexes is not None and penguins is not None and scores is not None and players_penguins_count is not None)
 
         if length is not None:
             self.hexes = {(x, y) : Hex(x, y) for x, y in 
                             (coords for coords in product(range(length), repeat=2))}
             self.penguins = set()
+            self.players_penguins_count = {GameState.PLAYER_ONE: 0, GameState.PLAYER_TWO: 0}
             self.scores = {GameState.PLAYER_ONE: 0, GameState.PLAYER_TWO: 0}
             self.length = length
 
@@ -21,6 +22,7 @@ class HtmfBoard(object):
             self.hexes = hexes
             self.penguins = penguins
             self.scores = scores
+            self.players_penguins_count = players_penguins_count
 
     def get_hex(self, coords):
         return self.hexes[coords]
@@ -35,7 +37,10 @@ class HtmfBoard(object):
         if not bhex.is_passable:
             raise IllegalMoveException()
 
-        self.penguins.add(Penguin(bhex, player))
+        next_penguin_index = self.players_penguins_count[player]
+        self.players_penguins_count[player] += 1
+
+        self.penguins.add(Penguin(bhex, player, next_penguin_index))
         bhex.is_passable = False
         bhex.player = player
         self.scores[player] += bhex.value
@@ -115,10 +120,11 @@ class HtmfBoard(object):
 
     def _clone(self):
         new_hexes = {coords.coords() : coords.clone() for coords in self.hexes.values()}
-        new_penguins = [Penguin(new_hexes[p.bhex.coords()], p.player)
+        new_penguins = [Penguin(new_hexes[p.bhex.coords()], p.player, p.index)
                         for p in self.penguins]
 
-        return HtmfBoard(hexes=new_hexes, penguins=new_penguins, scores=self.scores.copy())
+        return HtmfBoard(hexes=new_hexes, penguins=new_penguins,scores=self.scores.copy(),
+                         players_penguins_count=self.players_penguins_count.copy())
 
     def make_move(self, start_coords, end_coords):
         assert self.is_passable_path_coords(start_coords, end_coords)
@@ -164,7 +170,8 @@ class Hex(object):
         return (self.x, self.y)
 
 class Penguin(object):
-    def __init__(self, bhex, player):
+    def __init__(self, bhex, player, index):
         self.bhex = bhex
         self.player = player
         self.can_move = True
+        self.index = index
