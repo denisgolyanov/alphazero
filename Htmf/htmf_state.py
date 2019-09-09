@@ -58,9 +58,8 @@ class HtmfState(GameState):
         first_player = self._current_player
         second_player = self.PLAYER_ONE if first_player == self.PLAYER_TWO else self.PLAYER_TWO
 
-        # one hot for "player has penguin here". penguins with smaller coordinates go first.
-        # the sorting might not be necessary since the penguins' order shouldn't really change.
-        for penguin in sorted(self.board.penguins, lambda p: p.bhex.coords()):
+        # one hot for "player has penguin here"
+        for penguin in self.board.penguins:
             if penguin.player == first_player:
                 tensor[0, 0, penguin.bhex.x, penguin.bhex.y] = 1
             if penguin.player == second_player:
