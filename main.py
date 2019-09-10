@@ -6,7 +6,7 @@ from connect4.connect_four_training_spec import ConnectFourTrainingSpecification
 logger.info(f"Using cuda: {CUDA}")
 
 # train(TickTackToeTrainingSpecification())
-train(ConnectFourTrainingSpecification())
+train(ConnectFourTrainingSpecification(), checkpoint="connect_four2019-09-10T12_01_47_837265")
 #compete_with_user(ConnectFourTrainingSpecification(), "connect_four2019-09-06T14_47_05_079127")
 
 
