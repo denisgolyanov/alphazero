@@ -4,6 +4,10 @@ from Htmf.htmf_board import HtmfBoard
 
 
 class HtmfGameEngine(GameEngine):
+    def __init__(self, length):
+        # ignored for now
+        self._length = length
+
     def create_new_game(self):
         board = HtmfBoard(length=5)
         board.place_penguin((1, 1), HtmfState.PLAYER_ONE)

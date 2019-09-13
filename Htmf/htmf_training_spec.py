@@ -1,25 +1,27 @@
 from Htmf.htmf_game_engine import HtmfGameEngine
 from Htmf.htmf_prediction_network import HtmfPredictionNetwork
-from Htmf.htmf_training_augmentor import ConnectFourTrainingAugmentor
 from interfaces.training_spec import TrainingSpecification
 
-NUM_SIMULATIONS = 150
-NUM_EVALUATE_GAMES = 40
-NUM_RANDOM_GAMES = 10
-RESIDUAL_DEPTH = 4
+NUM_SIMULATIONS = 10
+NUM_EVALUATE_GAMES = 3
+NUM_RANDOM_GAMES = 2
+RESIDUAL_DEPTH = 5
 THRESHOLD = 1.05
-NUM_EPOCHS = 10
-NUM_INPUT_CHANNELS = 3
-NUM_EPISODES = 100
-NUM_GAMES_PER_EPISODE = 50
-NUM_HISTORY_EPISODES = 5
+NUM_EPOCHS = 2
+NUM_INPUT_CHANNELS = 4
+NUM_EPISODES = 2
+NUM_GAMES_PER_EPISODE = 2
+NUM_HISTORY_EPISODES = 2
+
 LENGTH = 5
+PENGUINS_PER_PLAYER = 2
 
 
 class HtmfTrainingSpecification(TrainingSpecification):
 
     def __init__(self):
         self._length = LENGTH
+        self._penguins_per_player = PENGUINS_PER_PLAYER
 
     @property
     def num_simulations(self):
@@ -62,11 +64,10 @@ class HtmfTrainingSpecification(TrainingSpecification):
 
     @property
     def training_examples_per_game(self):
-        ###################################
-        raise NotImplementedError()
+        return (self._length ** 2)
 
     def prediction_network(self, alpha_network):
-        return HtmfPredictionNetwork(alpha_network, self._length)
+        return HtmfPredictionNetwork(alpha_network, self._length, self._penguins_per_player)
 
     @property
     def num_episodes(self):

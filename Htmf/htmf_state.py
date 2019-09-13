@@ -1,5 +1,6 @@
 from interfaces.game_state import GameState
 from Htmf.htmf_action import HtmfAction
+import torch
 
 
 class HtmfState(GameState):
@@ -59,14 +60,14 @@ class HtmfState(GameState):
         second_player = self.PLAYER_ONE if first_player == self.PLAYER_TWO else self.PLAYER_TWO
 
         # one hot for "player has penguin here"
-        for penguin in self.board.penguins:
+        for penguin in self._board.penguins:
             if penguin.player == first_player:
                 tensor[0, 0, penguin.bhex.x, penguin.bhex.y] = 1
             if penguin.player == second_player:
                 tensor[0, 1, penguin.bhex.x, penguin.bhex.y] = 1
 
         # one hot for "player has taken this tile"
-        for bhex in self.board.hexes.values():
+        for bhex in self._board.hexes.values():
             if bhex.player == first_player:
                 tensor[0, 2, bhex.x, bhex.y] = 1
             elif bhex.player == second_player:

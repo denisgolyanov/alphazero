@@ -24,7 +24,7 @@ class HtmfPredictionNetwork(PredictionNetwork):
         state_tensor = state.convert_to_tensor()
         action_probabilities, value = self._network.predict(state_tensor)
 
-        all_possible_actions = state.all_possible_actions()
+        all_possible_actions = list(state.all_possible_actions())
         all_possible_actions_raw = [(action.start_coords, action.end_coords)
                                     for action in all_possible_actions]
 
@@ -43,16 +43,15 @@ class HtmfPredictionNetwork(PredictionNetwork):
         action_probabilities = action_probabilities / sum(action_probabilities)
 
         # build pairs to return - (action, probability) for each possible action
-        action_probability_pairs = (
-            [action,
-             action_probabilities[action_to_index(action.start_coords, action.end_coords)].item()
+        action_probability_pairs = \
+            [(action, 
+              action_probabilities[action_to_index(action.start_coords, action.end_coords)].item())
              for action in all_possible_actions]
-         )
 
         return action_probability_pairs, value.item()
 
     def translate_to_action_probabilities_tensor(self, action_mcts_probability_pairs):
-        tensor = torch.zeroes([1, (self._length**2)*self._penguins_per_player], dtype=torch.double)
+        tensor = torch.zeros([1, (self._length**2)*self._penguins_per_player], dtype=torch.double)
 
         # output is one board of possible moves per penguin
         # first board always represents penguin on earlier coordinates, so need
@@ -73,4 +72,4 @@ class HtmfPredictionNetwork(PredictionNetwork):
 
     @staticmethod
     def get_ordered_peguins(actions):
-        return sorted(set(a.start_coords for a in action))
+        return sorted(set(a.start_coords for a in actions))
