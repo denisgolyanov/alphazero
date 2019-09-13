@@ -13,7 +13,7 @@ class HtmfState(GameState):
     def _next_player(self):
         next_player = self.PLAYER_ONE if self._current_player == self.PLAYER_TWO else self.PLAYER_TWO
 
-        if self._board.can_move(self._current_player):
+        if self._board.can_move(next_player):
             return next_player
         else:
             return self._current_player
