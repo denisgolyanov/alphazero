@@ -10,19 +10,22 @@ class HtmfState(GameState):
 
         assert current_player in [self.PLAYER_ONE, self.PLAYER_TWO]
 
-    def _next_player(self):
-        next_player = self.PLAYER_ONE if self._current_player == self.PLAYER_TWO else self.PLAYER_TWO
+    def _other_player(self):
+        return self.PLAYER_ONE if self._current_player == self.PLAYER_TWO else self.PLAYER_TWO
 
-        if self._board.can_move(next_player):
-            return next_player
-        else:
-            return self._current_player
+    def _next_player(self, board):
+        next_player = self._other_player()
+
+        if not board.can_move(next_player):
+            next_player = self._current_player
+
+        return next_player
 
     def do_action(self, action):
         assert isinstance(action, HtmfAction)
         new_board = self._board.make_move(action.start_coords, action.end_coords)
 
-        return HtmfState(new_board, self._next_player())
+        return HtmfState(new_board, self._next_player(new_board))
 
     def get_player(self):
         return self._current_player
@@ -45,8 +48,8 @@ class HtmfState(GameState):
         return self._board.game_over()
 
     def all_possible_actions(self):
-        return (HtmfAction(start, end)
-                for start, end in self._board.all_possible_moves_for_player(self._current_player))
+        return [HtmfAction(start, end)
+                for start, end in self._board.all_possible_moves_for_player(self._current_player)]
 
     def __str__(self):
         return str(self._board) + "TURN: {0}\r\n".format(self._current_player)
@@ -62,15 +65,15 @@ class HtmfState(GameState):
         # one hot for "player has penguin here"
         for penguin in self._board.penguins:
             if penguin.player == first_player:
-                tensor[0, 0, penguin.bhex.x, penguin.bhex.y] = 1
+                tensor[0, 0, penguin.bhex.x, penguin.bhex.y] = 1.
             if penguin.player == second_player:
-                tensor[0, 1, penguin.bhex.x, penguin.bhex.y] = 1
+                tensor[0, 1, penguin.bhex.x, penguin.bhex.y] = 1.
 
         # one hot for "player has taken this tile"
         for bhex in self._board.hexes.values():
             if bhex.player == first_player:
-                tensor[0, 2, bhex.x, bhex.y] = 1
+                tensor[0, 2, bhex.x, bhex.y] = 1.
             elif bhex.player == second_player:
-                tensor[0, 3, bhex.x, bhex.y] = 1
+                tensor[0, 3, bhex.x, bhex.y] = 1.
 
         return tensor

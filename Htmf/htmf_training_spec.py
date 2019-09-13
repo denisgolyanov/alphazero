@@ -3,7 +3,7 @@ from Htmf.htmf_prediction_network import HtmfPredictionNetwork
 from interfaces.training_spec import TrainingSpecification
 
 NUM_SIMULATIONS = 10
-NUM_EVALUATE_GAMES = 3
+NUM_EVALUATE_GAMES = 2
 NUM_RANDOM_GAMES = 2
 RESIDUAL_DEPTH = 5
 THRESHOLD = 1.05

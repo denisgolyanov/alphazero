@@ -24,7 +24,7 @@ class HtmfPredictionNetwork(PredictionNetwork):
         state_tensor = state.convert_to_tensor()
         action_probabilities, value = self._network.predict(state_tensor)
 
-        all_possible_actions = list(state.all_possible_actions())
+        all_possible_actions = state.all_possible_actions()
         all_possible_actions_raw = [(action.start_coords, action.end_coords)
                                     for action in all_possible_actions]
 
@@ -37,7 +37,7 @@ class HtmfPredictionNetwork(PredictionNetwork):
         possible_actions_indexes = set(action_to_index(*action) for action in all_possible_actions_raw)
         for i in range(len(action_probabilities)):
             if i not in possible_actions_indexes:
-                action_probabilities[i] = 0
+                action_probabilities[i] = 0.
 
         # normalize
         action_probabilities = action_probabilities / sum(action_probabilities)
