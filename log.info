@@ -10006,3 +10006,16 @@ Eval round 35/40
 Eval round 36/40
 Eval round 37/40
 Eval round 38/40
+Using cuda: True
+ connect_four
+        residual depth: 3
+        num simulations: 600
+        num episodes: 100
+        games per episodes: 75
+        history episodes: 5
+        num epochs: 10
+        num evaluation games: 40
+        num random evaluation games: 10
+        improvement threshold: 1.05
+        
+Loading CPU checkpoint from connect_four2019-09-13T05_58_10_784388
