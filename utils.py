@@ -1,6 +1,8 @@
 import logging
 import sys
 
+from pathlib2 import Path
+
 EXTREME_DEBUG_LEVEL = 5
 
 def setup_logger(name, log_file, level):
@@ -29,3 +31,5 @@ logger.verbose_debug = types.MethodType(verbose_debug, logger)
 
 
 CUDA = True
+ROOT_DIR = Path("/home/toky/shalgi/alphazero")
+CHECKPOINTS_DIR = ROOT_DIR / "checkpoints"

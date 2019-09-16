@@ -3,15 +3,15 @@ from connect4.connect_four_prediction_network import ConnectFourPredictionNetwor
 from connect4.connect_four_training_augmentor import ConnectFourTrainingAugmentor
 from interfaces.training_spec import TrainingSpecification
 
-NUM_SIMULATIONS = 600
-NUM_EVALUATE_GAMES = 40
-NUM_RANDOM_GAMES = 10
+NUM_SIMULATIONS = 10
+NUM_EVALUATE_GAMES = 4
+NUM_RANDOM_GAMES = 2
 RESIDUAL_DEPTH = 3
 THRESHOLD = 1.05
 NUM_EPOCHS = 10
 NUM_INPUT_CHANNELS = 3
 NUM_EPISODES = 100
-NUM_GAMES_PER_EPISODE = 75
+NUM_GAMES_PER_EPISODE = 5
 NUM_HISTORY_EPISODES = 5
 NUM_ROWS = 6
 NUM_COLS = 7
