@@ -53,7 +53,7 @@ class TreeNode(object):
         :return: The selection score for this state, action pair
                  A variant of the PUCT algorithm
         """
-        C_PUCT = 0.2
+        C_PUCT = 1
 
         # The exploration score diminishes as the visit count increases
         exploration_score = \

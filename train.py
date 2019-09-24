@@ -59,12 +59,12 @@ def train(train_specification, checkpoint=None):
             logger.info("Saving checkpoint")
             previous_network = current_network
             previous_network.save_checkpoint(train_specification.game_name, all_examples)
+            evaluate_competitive(train_specification, previous_network, current_network)
+            evaluate_random(train_specification, current_network)
         else:
             # retain examples from previous episode, but store checkpoint regardless
             current_network.save_checkpoint(train_specification.game_name, all_examples)
 
-        evaluate_competitive(train_specification, previous_network, current_network)
-        evaluate_random(train_specification, current_network)
 
 
 def evaluate_competitive(train_spec, previous_network, current_network):

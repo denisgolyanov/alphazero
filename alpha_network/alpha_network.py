@@ -9,11 +9,12 @@ import torch
 import numpy as np
 import pickle
 
-from utils import logger, CUDA
+from utils import logger, CUDA, CHECKPOINTS_DIR
 
 
 class AlphaNetwork(nn.Module):
-    def __init__(self, residual_depth, single_channel_size, num_input_channels, num_possible_actions):
+    def __init__(self, residual_depth, single_channel_size, num_input_channels,
+                 num_possible_actions):
         super(AlphaNetwork, self).__init__()
 
         INTERMIDATE_RESIDUAL_NUM_CHANNELS = 256
@@ -56,7 +57,7 @@ class AlphaNetwork(nn.Module):
         """
         :return: The square error between the outputs and target values, averaged over the sample size.
         """
-        return torch.sum((targets - outputs)**2) / outputs.size()[0]
+        return torch.sum((targets - outputs) ** 2) / outputs.size()[0]
 
     def forward_batch(self, states, target_policies, target_values):
         """
@@ -67,7 +68,8 @@ class AlphaNetwork(nn.Module):
                  policies summed with the averaged squared error for each value)
         """
         policies, values = self._forward(states)
-        return self._policy_loss(policies, target_policies) + self._value_loss(values, target_values)
+        return self._policy_loss(policies, target_policies) + self._value_loss(
+            values, target_values)
 
     def train(self, train_examples, epochs, batch_size=32):
         """
@@ -95,7 +97,9 @@ class AlphaNetwork(nn.Module):
             while batch_index < num_batches:
                 optimizer.zero_grad()
 
-                states, policies, values = list(zip(*train_examples[batch_index * batch_size: (batch_index + 1) * batch_size]))
+                states, policies, values = list(zip(*train_examples[
+                                                     batch_index * batch_size: (
+                                                                                           batch_index + 1) * batch_size]))
                 states = torch.cat(states)
                 policies = torch.cat(policies)
                 values = torch.cat(values)
@@ -116,28 +120,31 @@ class AlphaNetwork(nn.Module):
 
     def save_checkpoint(self, game_name, examples_history):
         import datetime
-        file_name = game_name + datetime.datetime.now().isoformat().replace(':', '_').replace('.', '_')
+        file_name = game_name + datetime.datetime.now().isoformat()\
+            .replace(':', '_').replace('.', '_')
+        file_path = CHECKPOINTS_DIR / file_name
+        history_path = CHECKPOINTS_DIR / (file_name + "_history")
 
-        logger.info(f"Storing checkpoint at {file_name}")
+        logger.info(f"Storing checkpoint at {file_path}")
+        with open(file_path, 'wb') as f:
+            torch.save({
+                'state_dict': self.state_dict(),
+            }, f)
 
-        torch.save({
-            'state_dict': self.state_dict(),
-        }, file_name)
-
-        with open(file_name + "_history", 'wb') as f:
+        with open(history_path, 'wb') as f:
             f.write(pickle.dumps(examples_history))
 
     def load_checkpoint(self, file_name):
-        logger.info(f"Loading CPU checkpoint from {file_name}")
-        checkpoint = torch.load(file_name, map_location='cpu')
-        self.load_state_dict(checkpoint['state_dict'])
+        checkpoint_path = CHECKPOINTS_DIR / file_name
+        history_path = CHECKPOINTS_DIR / (file_name + "_history")
+        logger.info(f"Loading CPU checkpoint from {checkpoint_path}")
+        with open(checkpoint_path, 'rb') as f:
+            checkpoint = torch.load(f, map_location='cpu')
+            self.load_state_dict(checkpoint['state_dict'])
 
-        with open(file_name + "_history", 'rb') as f:
+        with open(history_path, 'rb') as f:
             result = pickle.loads(f.read())
         if CUDA:
-            result = [(item[0].cuda(), item[1].cuda(), item[2].cuda()) for item in result]
+            result = [(item[0].cuda(), item[1].cuda(), item[2].cuda()) for item
+                      in result]
         return result
-
-
-
-
