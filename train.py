@@ -84,7 +84,7 @@ def evaluatle_random_from_checkpoint(train_spec, checkpoint):
                            train_spec.num_input_channels,
                            train_spec.total_possible_actions)
     network = network.double()
-    network.load_checkpoint(checkpoint)
+    network.load_checkpoint(checkpoint, load_history=False)
     evaluate_random(train_spec, network)
 
 
