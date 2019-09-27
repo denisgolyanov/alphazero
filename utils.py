@@ -31,5 +31,4 @@ logger.verbose_debug = types.MethodType(verbose_debug, logger)
 
 
 CUDA = True
-ROOT_DIR = Path("/home/toky/shalgi/alphazero")
-CHECKPOINTS_DIR = ROOT_DIR / "checkpoints"
+CHECKPOINTS_DIR = Path("checkpoints")

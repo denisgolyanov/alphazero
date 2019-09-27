@@ -134,13 +134,16 @@ class AlphaNetwork(nn.Module):
         with open(history_path, 'wb') as f:
             f.write(pickle.dumps(examples_history))
 
-    def load_checkpoint(self, file_name):
+    def load_checkpoint(self, file_name, load_history=True):
         checkpoint_path = CHECKPOINTS_DIR / file_name
         history_path = CHECKPOINTS_DIR / (file_name + "_history")
         logger.info(f"Loading CPU checkpoint from {checkpoint_path}")
         with open(checkpoint_path, 'rb') as f:
             checkpoint = torch.load(f, map_location='cpu')
             self.load_state_dict(checkpoint['state_dict'])
+
+        if not load_history:
+            return
 
         with open(history_path, 'rb') as f:
             result = pickle.loads(f.read())

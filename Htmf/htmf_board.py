@@ -1,6 +1,5 @@
 from itertools import product, chain
 from interfaces.game_state import GameState
-import ipdb
 
 class HexesNotInLineException(Exception):
     pass

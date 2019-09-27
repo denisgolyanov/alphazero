@@ -1,5 +1,6 @@
 import copy
 import pickle
+import time
 
 from interfaces.training_spec import TrainingSpecification
 from alpha_network.alpha_network import AlphaNetwork
@@ -31,11 +32,15 @@ def train(train_specification, checkpoint=None):
 
     logger.info("Starting")
     for episode in range(train_specification.num_episodes):
+        episode_start_time = time.time()
+
         logger.info(f"episode: {episode}/{train_specification.num_episodes}")
 
         current_network = copy.deepcopy(previous_network)
 
+        self_play_start_time = time.time()
         for game in range(train_specification.num_games_per_episode):
+            game_start_time = time.time()
             logger.debug(f"Episode {episode} - Self-Playing game number {game}/{train_specification.num_games_per_episode}")
             self_play_engine = SelfPlay(train_specification.prediction_network(current_network),
                                         train_specification.game_engine(),
@@ -44,7 +49,10 @@ def train(train_specification, checkpoint=None):
                                         train_specification.temperature)
 
             game_score, training_examples = self_play_engine.play()
+            logger.info(f"Self-play game took ({time.time() - game_start_time}) seconds")
+
             all_examples.extend(training_examples)
+        logger.info(f"Self-play took ({time.time() - self_play_start_time}) seconds")
 
         all_examples = list(reversed(list(reversed(all_examples))[:num_examples_history]))
         logger.info(f"current size of all_examples is {len(all_examples)}")
@@ -52,8 +60,10 @@ def train(train_specification, checkpoint=None):
             logger.info("will use cuda during training")
             current_network = current_network.cuda()
 
+        train_start_time = time.time()
         losses = current_network.train(all_examples, epochs=train_specification.num_epochs, batch_size=64)
         current_network = current_network.cpu()
+        logger.info(f"Training took ({time.time() - train_start_time}) seconds")
 
         if evaluate_vs_previous(train_specification, previous_network, current_network):
             logger.info("Saving checkpoint")
@@ -65,6 +75,17 @@ def train(train_specification, checkpoint=None):
             # retain examples from previous episode, but store checkpoint regardless
             current_network.save_checkpoint(train_specification.game_name, all_examples)
 
+        logger.info(f"Episode took ({time.time() - episode_start_time}) seconds")
+
+
+def evaluatle_random_from_checkpoint(train_spec, checkpoint):
+    network = AlphaNetwork(train_spec.residual_depth,
+                           train_spec.single_channel_size,
+                           train_spec.num_input_channels,
+                           train_spec.total_possible_actions)
+    network = network.double()
+    network.load_checkpoint(checkpoint)
+    evaluate_random(train_spec, network)
 
 
 def evaluate_competitive(train_spec, previous_network, current_network):
@@ -102,8 +123,11 @@ def evaluate_vs_previous(train_spec, previous_network, current_network):
                              num_simulations=train_spec.num_simulations)
     agent_b = AlphaZeroAgent(current_prediction_network,  train_spec.game_engine(),
                              num_simulations=train_spec.num_simulations)
+    evaluation_start_time = time.time()
     evaluation = Evaluation(train_spec.game_engine(), agent_a, agent_b)
+
     scores = evaluation.play_n_games(train_spec.num_evaluation_games)
+    logger.info(f"Evaluation took ({time.time() - evaluation_start_time}) seconds")
 
     logger.info(f"Eval scores {scores}")
     if not scores[GameState.PLAYER_ONE]\
@@ -122,9 +146,7 @@ def compete_with_user(train_spec, checkpoint_name):
                            train_spec.num_input_channels,
                            train_spec.total_possible_actions)
     network = network.double()
-    if CUDA:
-        network = network.cuda()
-    network.load_checkpoint(checkpoint_name)
+    network.load_checkpoint(checkpoint_name, load_history=False)
 
     agent_a = AlphaZeroAgent(train_spec.prediction_network(network), train_spec.game_engine(),
                              num_simulations=train_spec.num_simulations)
