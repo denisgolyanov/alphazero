@@ -1,3 +1,4 @@
+from Htmf.htmf_training_spec import HtmfTrainingSpecification
 from train import train, compete_with_user
 from utils import logger, CUDA
 from TicTacToe.tick_tack_toe_training_spec import TickTackToeTrainingSpecification
