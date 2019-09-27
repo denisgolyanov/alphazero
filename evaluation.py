@@ -40,6 +40,7 @@ class Evaluation(object):
                 raise Exception("Neither of players' turn")
 
             logger.verbose_debug(f"Suggested action: {next_action}")
+            print(f"Suggested action: {next_action}")
             game_state = game_state.do_action(next_action)
 
         logger.verbose_debug(f"\r\nFinal {game_state}")

@@ -52,7 +52,7 @@ class HtmfState(GameState):
                 for start, end in self._board.all_possible_moves_for_player(self._current_player)]
 
     def __str__(self):
-        return str(self._board) + "TURN: {0}\r\n".format(self._current_player)
+        return str(self._board) + "\r\n" + "TURN: {0}\r\n".format(self._current_player)
 
     def convert_to_tensor(self):
         board_length = self._board.length
