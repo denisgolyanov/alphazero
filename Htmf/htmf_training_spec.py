@@ -4,7 +4,7 @@ from interfaces.training_spec import TrainingSpecification
 
 NUM_SIMULATIONS = 1000
 NUM_EVALUATE_GAMES = 40
-NUM_RANDOM_GAMES = 15
+NUM_RANDOM_GAMES = 14
 RESIDUAL_DEPTH = 6
 THRESHOLD = 1.05
 NUM_EPOCHS = 10
